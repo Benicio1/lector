@@ -42,17 +42,25 @@
   left: 0;
   right: 0;
   height: 52px;
-  background: rgba(24, 24, 27, 0.88);
+  background: rgba(24, 24, 27, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
-  padding: 0 6px;
+  padding: 0 8px;
   gap: 6px;
   z-index: 40;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: none;
+}
+
+.reader-top-bar::-webkit-scrollbar {
+  display: none;
 }
 
 .reader-top-bar.bars-hidden {
@@ -65,73 +73,42 @@
   background: rgba(39, 39, 42, 0.85);
   border: 1px solid rgba(63, 63, 70, 0.7);
   color: #e4e4e7;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 7px 9px;
-  border-radius: 9px;
+  padding: 6px 9px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   flex-shrink: 0;
-}
-
-.doc-info {
-  display: none;
-}
-
-@media (min-width: 640px) {
-  .doc-info {
-    display: block;
-    flex: 1;
-    min-width: 0;
-    margin: 0 6px;
-  }
-}
-
-.doc-title {
-  font-size: 0.86rem;
-  font-weight: 600;
-  color: #f4f4f5;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
+  touch-action: pan-x;
 }
 
 .reader-actions {
   display: flex;
   align-items: center;
-  gap: 5px;
-  flex: 1;
-  justify-content: flex-end;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding: 2px 2px 2px 0;
-}
-
-.reader-actions::-webkit-scrollbar {
-  display: none;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .reader-actions button {
   flex-shrink: 0;
+  touch-action: pan-x;
 }
 
 .btn-rotate-action, .btn-immersion-action, .btn-toggle-mode {
   background: rgba(39, 39, 42, 0.85);
   border: 1px solid rgba(63, 63, 70, 0.7);
   color: #fbbf24;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  padding: 7px 9px;
-  border-radius: 9px;
+  padding: 6px 9px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   white-space: nowrap;
 }
 
@@ -145,15 +122,16 @@
   background: linear-gradient(135deg, #d97706, #b45309);
   color: #ffffff;
   border: none;
-  border-radius: 9px;
-  padding: 7px 10px;
-  font-size: 0.82rem;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   cursor: pointer;
   white-space: nowrap;
+  touch-action: pan-x;
 }
 
 /* ==========================================================================

@@ -286,11 +286,11 @@ export class AppController {
     }
 
     if (isText) {
-      this.btnToggleViewMode.innerHTML = '<span>📄</span> Ver PDF';
+      this.btnToggleViewMode.innerHTML = '<span>📄</span> PDF';
       this.btnToggleViewMode.classList.add('active-text-mode');
       this.fontSizeLabel.textContent = `${this.textController.fontSize}px`;
     } else {
-      this.btnToggleViewMode.innerHTML = '<span>👓</span> Letra Grande';
+      this.btnToggleViewMode.innerHTML = '<span>👓</span> Texto';
       this.btnToggleViewMode.classList.remove('active-text-mode');
       this.updateZoomLabel();
     }

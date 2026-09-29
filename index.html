@@ -225,19 +225,31 @@
     import { AppController } from './src/gui/app-controller.js';
     import { PwaManager } from './src/gui/pwa-manager.js';
 
-    document.addEventListener('DOMContentLoaded', () => {
-      window.app = new AppController();
+    function initApp() {
+      if (window._appStarted) return;
+      window._appStarted = true;
 
-      window.pwa = new PwaManager({
-        installBannerEl: document.getElementById('pwa-install-banner'),
-        installBtnEl: document.getElementById('btn-install-app'),
-        onStatusChange: (status) => {
-          if (status.offlineReady) {
-            console.log('[PWA] Listo para operar 100% offline.');
+      try {
+        window.app = new AppController();
+        window.pwa = new PwaManager({
+          installBannerEl: document.getElementById('pwa-install-banner'),
+          installBtnEl: document.getElementById('btn-install-app'),
+          onStatusChange: (status) => {
+            if (status.offlineReady) {
+              console.log('[PWA] Listo para operar 100% offline.');
+            }
           }
-        }
-      });
-    });
+        });
+      } catch (err) {
+        console.error('[Lector] Error al inicializar:', err);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
   </script>
 </body>
 </html>

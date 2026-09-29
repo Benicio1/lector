@@ -278,7 +278,13 @@ export class AppController {
     this.immersion.toggleImmersion(false);
 
     try {
-      await this.viewer.loadDocument({ data }, { name, size, initialPage });
+      let bufferToLoad = data;
+      if (data instanceof ArrayBuffer) {
+        bufferToLoad = data.slice(0);
+      } else if (data && data.buffer instanceof ArrayBuffer) {
+        bufferToLoad = data.buffer.slice(0);
+      }
+      await this.viewer.loadDocument({ data: bufferToLoad }, { name, size, initialPage });
       if (this.viewMode === 'text') await this.syncCurrentPageText();
     } catch (err) {
       alert('Error al leer el archivo PDF: ' + err.message);

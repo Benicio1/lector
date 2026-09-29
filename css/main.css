@@ -23,6 +23,13 @@ body {
   -webkit-user-select: none;
 }
 
+button, label, input, select, a, .book-card, .btn-resume-book {
+  user-select: auto;
+  -webkit-user-select: auto;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
 .hidden {
   display: none !important;
 }

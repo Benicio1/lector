@@ -1,6 +1,7 @@
 /**
  * filters.css — Estilos del Panel de Confort Visual y Filtros de Luz
- * Reglas de diseño para presets, sliders de ajuste fino y overlay ambarino.
+ * Reglas de diseño para presets, sliders y adaptación horizontal ultra-compacta.
+ * Cumple con el límite de 400 líneas de AGENTS.md.
  */
 
 :root {
@@ -21,11 +22,11 @@
 
 /* Modal Bottom-Sheet de Confort Visual */
 .filters-modal {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 100;
   display: flex;
   align-items: flex-end;
@@ -40,12 +41,17 @@
 .filters-sheet {
   width: 100%;
   max-width: 520px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background-color: #18181b;
   border-top: 1px solid #27272a;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  padding: 18px 20px 24px;
+  padding: 16px 18px 20px;
   box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
   animation: slideUp 0.25s ease-out;
 }
 
@@ -66,12 +72,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .sheet-header h3 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: #f4f4f5;
   display: flex;
   align-items: center;
@@ -82,18 +88,18 @@
   background: none;
   border: none;
   color: #a1a1aa;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   padding: 6px;
   cursor: pointer;
   border-radius: 8px;
 }
 
-/* Grid de Presets */
+/* Grid de Presets (Modo Vertical: 3 columnas) */
 .preset-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .chip-btn {
@@ -101,20 +107,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 6px;
+  padding: 8px 6px;
   background-color: #27272a;
   border: 1px solid #3f3f46;
   border-radius: 12px;
   color: #d4d4d8;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 56px;
+  min-height: 52px;
 }
 
 .chip-btn .chip-icon {
-  font-size: 1.25rem;
-  margin-bottom: 4px;
+  font-size: 1.2rem;
+  margin-bottom: 3px;
 }
 
 .chip-btn.active {
@@ -127,15 +133,15 @@
 
 /* Sliders de Ajuste Fino */
 .slider-group {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .slider-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #a1a1aa;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .slider-label span:last-child {
@@ -156,8 +162,8 @@
 .filter-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: #f59e0b;
   cursor: pointer;
@@ -167,15 +173,144 @@
 .filter-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 .btn-secondary {
   background: none;
   border: 1px solid #3f3f46;
   color: #a1a1aa;
-  font-size: 0.85rem;
-  padding: 8px 14px;
+  font-size: 0.82rem;
+  padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+/* ==========================================================================
+   ADAPTACIÓN COMPACTA PARA MODO HORIZONTAL (LANDSCAPE FÍSICO O REDUCIDO)
+   ========================================================================== */
+@media (orientation: landscape) and (max-height: 600px), (max-height: 520px) {
+  .filters-modal {
+    align-items: center;
+    padding: 8px;
+  }
+  .filters-sheet {
+    max-width: 640px;
+    max-height: 94vh;
+    max-height: 94dvh;
+    border-radius: 16px;
+    padding: 10px 16px 10px;
+  }
+  .sheet-handle {
+    display: none;
+  }
+  .sheet-header {
+    margin-bottom: 6px;
+  }
+  .sheet-header h3 {
+    font-size: 0.92rem;
+  }
+  .btn-icon-close {
+    padding: 2px 6px;
+    font-size: 0.8rem;
+  }
+  .preset-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .chip-btn {
+    min-height: 38px;
+    padding: 4px 2px;
+    font-size: 0.68rem;
+    border-radius: 8px;
+  }
+  .chip-btn .chip-icon {
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+  }
+  .slider-group {
+    margin-bottom: 6px;
+  }
+  .slider-label {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+  }
+  .filter-slider {
+    height: 5px;
+  }
+  .filter-slider::-webkit-slider-thumb {
+    width: 17px;
+    height: 17px;
+  }
+  .filter-actions {
+    margin-top: 6px;
+  }
+  .btn-secondary {
+    padding: 4px 10px;
+    font-size: 0.74rem;
+  }
+}
+
+/* ==========================================================================
+   ADAPTACIÓN PARA ROTACIÓN POR SOFTWARE (#view-reader.forced-landscape)
+   ========================================================================== */
+#view-reader.forced-landscape .filters-modal {
+  align-items: center;
+  padding: 8px;
+}
+#view-reader.forced-landscape .filters-sheet {
+  max-width: 640px;
+  max-height: 94vw;
+  border-radius: 16px;
+  padding: 10px 16px 10px;
+}
+#view-reader.forced-landscape .sheet-handle {
+  display: none;
+}
+#view-reader.forced-landscape .sheet-header {
+  margin-bottom: 6px;
+}
+#view-reader.forced-landscape .sheet-header h3 {
+  font-size: 0.92rem;
+}
+#view-reader.forced-landscape .btn-icon-close {
+  padding: 2px 6px;
+  font-size: 0.8rem;
+}
+#view-reader.forced-landscape .preset-grid {
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+#view-reader.forced-landscape .chip-btn {
+  min-height: 38px;
+  padding: 4px 2px;
+  font-size: 0.68rem;
+  border-radius: 8px;
+}
+#view-reader.forced-landscape .chip-btn .chip-icon {
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+#view-reader.forced-landscape .slider-group {
+  margin-bottom: 6px;
+}
+#view-reader.forced-landscape .slider-label {
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+}
+#view-reader.forced-landscape .filter-slider {
+  height: 5px;
+}
+#view-reader.forced-landscape .filter-slider::-webkit-slider-thumb {
+  width: 17px;
+  height: 17px;
+}
+#view-reader.forced-landscape .filter-actions {
+  margin-top: 6px;
+}
+#view-reader.forced-landscape .btn-secondary {
+  padding: 4px 10px;
+  font-size: 0.74rem;
 }

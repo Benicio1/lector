@@ -169,56 +169,56 @@
           Siguiente <span>▶</span>
         </button>
       </footer>
+
+      <!-- ======================================================================
+           MODAL DE FILTROS DE LUZ Y DESCANSO VISUAL
+           ====================================================================== -->
+      <div id="modal-filters" class="filters-modal hidden">
+        <div class="filters-sheet">
+          <div class="sheet-handle"></div>
+          
+          <div class="sheet-header">
+            <h3><span>🛡️</span> Filtros para Descansar la Vista</h3>
+            <button id="btn-close-filters" class="btn-icon-close" aria-label="Cerrar">✕ Cerrar</button>
+          </div>
+
+          <!-- Chips de Modos Predefinidos con Etiquetas Claras -->
+          <div id="preset-chips" class="preset-grid">
+            <!-- Renderizado dinámico de Normal, Luz Cálida, Sepia, Noche, OLED, e-Ink -->
+          </div>
+
+          <!-- Sliders de Ajuste Fino -->
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>🔆 Brillo de Pantalla</span>
+              <span id="val-brightness">95%</span>
+            </div>
+            <input type="range" id="slider-brightness" class="filter-slider" min="25" max="130" value="95">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>🌅 Calidez (Filtro Anti-Luz Azul)</span>
+              <span id="val-warmth">30%</span>
+            </div>
+            <input type="range" id="slider-warmth" class="filter-slider" min="0" max="100" value="30">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>🎚️ Contraste de Lectura</span>
+              <span id="val-contrast">100%</span>
+            </div>
+            <input type="range" id="slider-contrast" class="filter-slider" min="70" max="140" value="100">
+          </div>
+
+          <div class="filter-actions">
+            <button id="btn-reset-filters" class="btn-secondary">Restablecer valores originales</button>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
-
-  <!-- ======================================================================
-       MODAL DE FILTROS DE LUZ Y DESCANSO VISUAL
-       ====================================================================== -->
-  <div id="modal-filters" class="filters-modal hidden">
-    <div class="filters-sheet">
-      <div class="sheet-handle"></div>
-      
-      <div class="sheet-header">
-        <h3><span>🛡️</span> Filtros para Descansar la Vista</h3>
-        <button id="btn-close-filters" class="btn-icon-close" aria-label="Cerrar">✕ Cerrar</button>
-      </div>
-
-      <!-- Chips de Modos Predefinidos con Etiquetas Claras -->
-      <div id="preset-chips" class="preset-grid">
-        <!-- Renderizado dinámico de Normal, Luz Cálida, Sepia, Noche, OLED, e-Ink -->
-      </div>
-
-      <!-- Sliders de Ajuste Fino -->
-      <div class="slider-group">
-        <div class="slider-label">
-          <span>🔆 Brillo de Pantalla</span>
-          <span id="val-brightness">95%</span>
-        </div>
-        <input type="range" id="slider-brightness" class="filter-slider" min="25" max="130" value="95">
-      </div>
-
-      <div class="slider-group">
-        <div class="slider-label">
-          <span>🌅 Calidez (Filtro Anti-Luz Azul)</span>
-          <span id="val-warmth">30%</span>
-        </div>
-        <input type="range" id="slider-warmth" class="filter-slider" min="0" max="100" value="30">
-      </div>
-
-      <div class="slider-group">
-        <div class="slider-label">
-          <span>🎚️ Contraste de Lectura</span>
-          <span id="val-contrast">100%</span>
-        </div>
-        <input type="range" id="slider-contrast" class="filter-slider" min="70" max="140" value="100">
-      </div>
-
-      <div class="filter-actions">
-        <button id="btn-reset-filters" class="btn-secondary">Restablecer valores originales</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Librería PDF.js Local y Autónoma -->
   <script src="vendor/pdf.min.js"></script>

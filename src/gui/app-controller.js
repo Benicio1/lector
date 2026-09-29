@@ -16,33 +16,34 @@ import {
 import {
   loadSettings,
   saveSettings,
-  getRecentBooks,
   recordBookProgress,
-  getSavedPage,
-  removeRecentBook
+  getSavedPage
 } from '../core/library-store.js';
 
 import { PdfViewer } from '../core/pdf-viewer.js';
 import { TextModeController } from './text-mode-controller.js';
 import { FilterModalController } from './filter-modal-controller.js';
+import { RecentShelf } from './recent-shelf.js';
 
 export class AppController {
   constructor() {
     this.viewer = null;
     this.textController = null;
     this.filterModal = null;
+    this.recentShelf = null;
     this.settings = loadSettings();
     this.currentFile = null;
     this.barsHidden = false;
+    this.isForcedLandscape = false;
     this.activePreset = this.settings.preset || PRESET_MODES.WARM;
-    this.viewMode = this.settings.viewMode || 'text'; // Default a texto grande
+    this.viewMode = this.settings.viewMode || 'text';
 
     this.cacheDom();
     this.initPdfViewer();
     this.initTextController();
     this.initFilterModal();
+    this.initRecentShelf();
     this.bindEvents();
-    this.renderRecentBooks();
     this.applyVisualFilters();
     this.updateModeUi();
   }
@@ -73,6 +74,8 @@ export class AppController {
     this.btnPrev = document.getElementById('btn-prev-page');
     this.btnNext = document.getElementById('btn-next-page');
 
+    this.btnToggleRotation = document.getElementById('btn-toggle-rotation');
+    this.btnToggleImmersion = document.getElementById('btn-toggle-immersion');
     this.btnToggleViewMode = document.getElementById('btn-toggle-view-mode');
     this.controlsTextMode = document.getElementById('controls-text-mode');
     this.controlsPdfMode = document.getElementById('controls-pdf-mode');
@@ -158,6 +161,18 @@ export class AppController {
     });
   }
 
+  initRecentShelf() {
+    this.recentShelf = new RecentShelf({
+      listEl: this.recentListEl,
+      emptyEl: this.emptyRecentsEl,
+      onSelectBook: (book) => {
+        alert(`Para reanudar "${book.name}", selecciona el archivo en tu teléfono. Se abrirá en la página ${book.currentPage}.`);
+        this.fileInput.click();
+      }
+    });
+    this.recentShelf.render();
+  }
+
   bindEvents() {
     this.btnPickFile.addEventListener('click', () => this.fileInput.click());
     this.fileInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files[0]));
@@ -187,6 +202,21 @@ export class AppController {
       this.updateModeUi();
       if (this.viewMode === 'text') this.syncCurrentPageText();
     });
+
+    // Botón de giro de pantalla (Horizontal / Vertical)
+    if (this.btnToggleRotation) {
+      this.btnToggleRotation.addEventListener('click', () => this.toggleRotation());
+    }
+
+    // Botón de inmersión explícito en cabecera
+    if (this.btnToggleImmersion) {
+      this.btnToggleImmersion.addEventListener('click', () => this.toggleImmersion());
+    }
+
+    // Botón flotante para restaurar controles
+    if (this.floatingRestorePill) {
+      this.floatingRestorePill.addEventListener('click', () => this.toggleImmersion(false));
+    }
 
     // Controles de tamaño de letra (Modo Texto)
     this.btnFontDecrease.addEventListener('click', () => {
@@ -229,23 +259,41 @@ export class AppController {
 
     this.btnOpenFilters.addEventListener('click', () => this.filterModal.open(this.settings));
 
-    // Inmersión: tocar pantalla oculta/muestra las barras
-    const toggleImmersionHandler = (e) => {
-      // Ignorar clics dentro de botones o enlaces
-      if (e.target.closest('button, select, input, a')) return;
-      this.toggleImmersion();
-    };
-
-    this.textContainer.addEventListener('click', toggleImmersionHandler);
-    this.pdfContainer.addEventListener('click', toggleImmersionHandler);
-    if (this.floatingRestorePill) {
-      this.floatingRestorePill.addEventListener('click', () => this.toggleImmersion(false));
-    }
+    // Detección unificada de tap táctil en la pantalla de lectura para ocultar/mostrar barras
+    this.bindTapImmersion();
 
     window.addEventListener('keydown', (e) => {
       if (this.viewReader.classList.contains('hidden')) return;
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') this.navigatePage(1);
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') this.navigatePage(-1);
+    });
+  }
+
+  bindTapImmersion() {
+    let pointerStart = null;
+
+    this.viewReader.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('button, select, input, a, .filters-sheet, .font-stepper, .reader-top-bar, .reader-bottom-nav')) {
+        return;
+      }
+      pointerStart = { x: e.clientX, y: e.clientY, time: Date.now() };
+    }, { passive: true });
+
+    this.viewReader.addEventListener('pointerup', (e) => {
+      if (!pointerStart) return;
+      if (e.target.closest('button, select, input, a, .filters-sheet, .font-stepper, .reader-top-bar, .reader-bottom-nav')) {
+        pointerStart = null;
+        return;
+      }
+      const deltaX = Math.abs(e.clientX - pointerStart.x);
+      const deltaY = Math.abs(e.clientY - pointerStart.y);
+      const elapsed = Date.now() - pointerStart.time;
+      pointerStart = null;
+
+      // Disparar solo si fue un tap intencional y no un arrastre de scroll
+      if (deltaX < 15 && deltaY < 15 && elapsed < 400) {
+        this.toggleImmersion();
+      }
     });
   }
 
@@ -257,6 +305,26 @@ export class AppController {
     if (this.floatingRestorePill) {
       this.floatingRestorePill.classList.toggle('hidden', !this.barsHidden);
     }
+  }
+
+  toggleRotation() {
+    this.isForcedLandscape = !this.isForcedLandscape;
+    this.viewReader.classList.toggle('forced-landscape', this.isForcedLandscape);
+    if (this.btnToggleRotation) {
+      this.btnToggleRotation.classList.toggle('active-rotation', this.isForcedLandscape);
+      this.btnToggleRotation.innerHTML = this.isForcedLandscape ? '<span>📱</span> Vertical' : '<span>🔄</span> Girar';
+    }
+
+    // Intento de bloqueo de orientación por Screen Orientation API nativa
+    try {
+      if (screen.orientation && typeof screen.orientation.lock === 'function') {
+        if (this.isForcedLandscape) {
+          screen.orientation.lock('landscape').catch(() => {});
+        } else if (typeof screen.orientation.unlock === 'function') {
+          screen.orientation.unlock();
+        }
+      }
+    } catch (_) {}
   }
 
   async navigatePage(delta) {
@@ -309,7 +377,7 @@ export class AppController {
 
     this.viewLibrary.classList.add('hidden');
     this.viewReader.classList.remove('hidden');
-    this.toggleImmersion(false); // Asegurar barras visibles al abrir
+    this.toggleImmersion(false);
 
     try {
       const arrayBuffer = await file.arrayBuffer();
@@ -341,53 +409,13 @@ export class AppController {
   }
 
   showLibraryView() {
+    if (this.isForcedLandscape) {
+      this.toggleRotation();
+    }
+    this.toggleImmersion(false);
     this.viewReader.classList.add('hidden');
     this.viewLibrary.classList.remove('hidden');
-    this.renderRecentBooks();
-  }
-
-  renderRecentBooks() {
-    const recents = getRecentBooks();
-    this.recentListEl.innerHTML = '';
-    if (!recents.length) {
-      this.emptyRecentsEl.classList.remove('hidden');
-      return;
-    }
-
-    this.emptyRecentsEl.classList.add('hidden');
-    recents.forEach(book => {
-      const card = document.createElement('div');
-      card.className = 'book-card';
-      const pct = Math.round((book.currentPage / book.totalPages) * 100);
-
-      card.innerHTML = `
-        <div class="book-card-main">
-          <div class="book-icon">📖</div>
-          <div class="book-info">
-            <h4 class="book-title">${this.escapeHtml(book.name)}</h4>
-            <div class="book-meta">Página ${book.currentPage} de ${book.totalPages} (${pct}%)</div>
-            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%"></div></div>
-          </div>
-        </div>
-        <div class="book-card-actions">
-          <button class="btn-resume-book">Continuar 📖</button>
-          <button class="btn-del-book" title="Quitar">✕</button>
-        </div>
-      `;
-
-      card.querySelector('.btn-resume-book').addEventListener('click', () => {
-        alert(`Para reanudar "${book.name}", selecciona el archivo en tu teléfono. Se abrirá en la página ${book.currentPage}.`);
-        this.fileInput.click();
-      });
-
-      card.querySelector('.btn-del-book').addEventListener('click', (e) => {
-        e.stopPropagation();
-        removeRecentBook(book.id);
-        this.renderRecentBooks();
-      });
-
-      this.recentListEl.appendChild(card);
-    });
+    this.recentShelf.render();
   }
 
   updatePageUi(currentPage, totalPages) {
@@ -418,11 +446,5 @@ export class AppController {
     document.documentElement.style.setProperty('--reader-canvas-bg', palette.canvasBg);
     document.documentElement.style.setProperty('--reader-viewport-bg', palette.readerBg);
     document.documentElement.style.setProperty('--reader-text-color', palette.textColor);
-  }
-
-  escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
   }
 }

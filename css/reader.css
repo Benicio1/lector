@@ -15,6 +15,21 @@
 }
 
 /* ==========================================================================
+   ROTACIÓN DE PANTALLA FORZADA POR SOFTWARE (HORIZONTAL / VERTICAL)
+   ========================================================================== */
+#view-reader.forced-landscape {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vh !important;
+  height: 100vw !important;
+  transform: rotate(90deg) translateY(-100%);
+  transform-origin: top left;
+  z-index: 999;
+  overflow: hidden;
+}
+
+/* ==========================================================================
    BARRAS DE NAVEGACIÓN Y ANIMACIÓN DE INMERSIÓN
    ========================================================================== */
 .reader-top-bar {
@@ -23,7 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
+  padding: 0 8px;
   z-index: 30;
   border-bottom: 1px solid #27272a;
   flex-shrink: 0;
@@ -40,24 +55,24 @@
   background: #27272a;
   border: 1px solid #3f3f46;
   color: #e4e4e7;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 .doc-info {
   flex: 1;
   min-width: 0;
-  margin: 0 8px;
+  margin: 0 6px;
 }
 
 .doc-title {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #f4f4f5;
   white-space: nowrap;
@@ -69,21 +84,51 @@
 .reader-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+}
+
+.btn-rotate-action {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  color: #fbbf24;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.btn-immersion-action {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  color: #e4e4e7;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 }
 
 .btn-toggle-mode {
   background: #27272a;
   border: 1px solid #d97706;
   color: #fbbf24;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   white-space: nowrap;
 }
 
@@ -98,12 +143,12 @@
   color: #ffffff;
   border: none;
   border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 0.88rem;
+  padding: 8px 10px;
+  font-size: 0.85rem;
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -159,7 +204,7 @@
   font-size: 0.9rem;
   font-weight: 700;
   color: #fbbf24;
-  min-width: 80px;
+  min-width: 60px;
   text-align: center;
 }
 
@@ -255,7 +300,7 @@
   background-color: var(--reader-canvas-bg, #ffffff);
   transition: filter 0.15s ease;
   vertical-align: middle;
-  height: auto !important; /* Preserva aspect ratio estricto */
+  height: auto !important;
 }
 
 /* ==========================================================================
@@ -313,24 +358,28 @@
 /* Botón flotante para restaurar controles en pantalla completa */
 .floating-restore-pill {
   position: fixed;
-  bottom: 16px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(24, 24, 27, 0.88);
+  background-color: rgba(24, 24, 27, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(245, 158, 11, 0.5);
+  border: 1px solid rgba(245, 158, 11, 0.6);
   color: #fbbf24;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
-  z-index: 50;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  z-index: 60;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.floating-restore-pill:active {
+  transform: translateX(-50%) scale(0.96);
 }
 
 /* ==========================================================================
@@ -339,45 +388,48 @@
 @media (orientation: landscape) and (max-height: 520px) {
   .reader-top-bar {
     height: 40px;
-    padding: 0 8px;
+    padding: 0 6px;
   }
-  .btn-back-action, .btn-toggle-mode, .btn-filter-trigger {
-    padding: 4px 8px;
+  .btn-back-action, .btn-rotate-action, .btn-immersion-action, .btn-toggle-mode, .btn-filter-trigger {
+    padding: 4px 6px;
+    font-size: 0.78rem;
+  }
+  .doc-title {
     font-size: 0.8rem;
   }
   .font-controls-bar {
-    padding: 3px 8px;
-    gap: 6px;
+    padding: 2px 6px;
+    gap: 4px;
   }
   .btn-font-step {
-    width: 30px;
-    height: 30px;
-    font-size: 0.95rem;
-  }
-  .font-size-badge {
-    font-size: 0.8rem;
-    min-width: 65px;
-  }
-  .font-select {
-    padding: 4px 6px;
-    font-size: 0.8rem;
-  }
-  .reader-bottom-nav {
-    height: 42px;
-    padding: 0 8px;
-  }
-  .btn-page-nav {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    min-height: 34px;
-  }
-  .page-counter-badge {
+    width: 28px;
+    height: 28px;
     font-size: 0.9rem;
   }
+  .font-size-badge {
+    font-size: 0.78rem;
+    min-width: 55px;
+  }
+  .font-select {
+    padding: 3px 4px;
+    font-size: 0.78rem;
+  }
+  .reader-bottom-nav {
+    height: 40px;
+    padding: 0 6px;
+  }
+  .btn-page-nav {
+    padding: 5px 10px;
+    font-size: 0.82rem;
+    min-height: 32px;
+  }
+  .page-counter-badge {
+    font-size: 0.85rem;
+  }
   .text-viewport-area {
-    padding: 12px 14px 40px;
+    padding: 10px 12px 30px;
   }
   .pdf-viewport-area {
-    padding: 10px 4px 40px;
+    padding: 8px 4px 30px;
   }
 }

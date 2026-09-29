@@ -1,0 +1,259 @@
+/**
+ * reader.css — Estilos de la Pantalla de Lectura, Texto Grande y Navegación
+ * Optimizado para pantallas de celular con controles accesibles para adultos.
+ * Cumple con el límite de 400 líneas de AGENTS.md.
+ */
+
+#view-reader {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--reader-viewport-bg, #18181b);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Barra Superior */
+.reader-top-bar {
+  height: 58px;
+  background-color: #18181b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 30;
+  border-bottom: 1px solid #27272a;
+  flex-shrink: 0;
+}
+
+.btn-back-action {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  color: #e4e4e7;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.doc-info {
+  flex: 1;
+  min-width: 0;
+  margin: 0 10px;
+}
+
+.doc-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f4f4f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.reader-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-toggle-mode {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  color: #fef3c7;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn-toggle-mode.active-text-mode {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+.btn-filter-trigger {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Barra de Ajuste de Letra y Tipografía */
+.font-controls-bar {
+  background-color: #212124;
+  border-bottom: 1px solid #2e2e33;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.font-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stepper-label {
+  font-size: 0.88rem;
+  color: #a1a1aa;
+}
+
+.btn-font-step {
+  background-color: #2e2e33;
+  color: #ffffff;
+  border: 1px solid #4a4a52;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.font-size-badge {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #fbbf24;
+  min-width: 85px;
+  text-align: center;
+}
+
+.font-family-selector {
+  flex: 1;
+  max-width: 210px;
+}
+
+.font-select {
+  width: 100%;
+  background-color: #2e2e33;
+  color: #f4f4f5;
+  border: 1px solid #4a4a52;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+}
+
+/* Área de Visualización: Modo Letra Grande Adaptable */
+.text-viewport-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px 30px;
+  background-color: var(--reader-canvas-bg, #fef9ee);
+  color: var(--reader-text-color, #1e293b);
+  display: flex;
+  justify-content: center;
+  -webkit-overflow-scrolling: touch;
+}
+
+.text-reading-content {
+  max-width: 680px;
+  width: 100%;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.reading-paragraph {
+  margin-bottom: 1.4em;
+  text-align: left;
+  letter-spacing: 0.2px;
+  word-break: break-word;
+}
+
+.empty-page-text {
+  text-align: center;
+  padding: 40px 10px;
+  color: #71717a;
+  font-size: 1.1rem;
+}
+
+/* Área de Visualización: Modo PDF Original (Canvas) */
+.pdf-viewport-area {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 10px;
+  background-color: var(--reader-viewport-bg, #18181b);
+}
+
+.pdf-page-canvas {
+  display: block;
+  margin: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  background-color: var(--reader-canvas-bg, #ffffff);
+  transition: filter 0.15s ease;
+  max-width: 100%;
+}
+
+/* Barra Inferior de Páginas */
+.reader-bottom-nav {
+  height: 62px;
+  background-color: #18181b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  border-top: 1px solid #27272a;
+  flex-shrink: 0;
+  z-index: 30;
+}
+
+.btn-page-nav {
+  background: linear-gradient(145deg, #27272a, #202024);
+  border: 1px solid #3f3f46;
+  color: #f4f4f5;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.btn-page-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.page-counter-container {
+  text-align: center;
+}
+
+.page-counter-badge {
+  font-size: 1.1rem;
+  color: #fbbf24;
+  font-weight: 800;
+}

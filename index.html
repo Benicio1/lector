@@ -7,35 +7,36 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Lector PDF">
-  <title>Lector Confort PDF — Filtros de Luz para Celular</title>
+  <title>Lector Confort PDF — Letra Grande y Filtros de Luz</title>
   
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   
   <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/reader.css">
   <link rel="stylesheet" href="css/filters.css">
 </head>
 <body>
 
   <!-- 📲 Banner de Instalación PWA Móvil -->
-  <div id="pwa-install-banner" class="install-banner hidden">
+  <aside id="pwa-install-banner" class="install-banner hidden">
     <div class="install-banner-content">
-      <span>📲</span>
-      <span>Instalá la app en tu teléfono para abrir PDFs sin conexión</span>
+      <span class="banner-icon">📲</span>
+      <span><strong>Instalar Lector PDF:</strong> Tocá acá para guardarlo en tu celular y usarlo sin internet</span>
     </div>
     <button id="btn-install-app" class="btn-install">Instalar</button>
-  </div>
+  </aside>
 
   <main class="view-container">
     <!-- ====================================================================
-         VISTA 1: BIBLIOTECA / SELECCIÓN DE PDF
+         VISTA 1: INICIO / BIBLIOTECA
          ==================================================================== -->
     <section id="view-library">
       <header class="app-brand">
         <div class="brand-icon">📖</div>
         <h1>Lector Confort PDF</h1>
-        <p>Lectura relajante con filtros de luz anti-fatiga visual</p>
+        <p class="brand-subtitle">Letra grande y filtros de luz para descansar la vista</p>
       </header>
 
       <!-- Selector de Archivo Local del Teléfono -->
@@ -44,35 +45,51 @@
       <div id="drop-zone" class="picker-card">
         <div class="picker-icon">📂</div>
         <button id="btn-pick-file" type="button" class="btn-open-phone">
-          <span>Elegir PDF del Teléfono</span>
+          <span>Abrir un PDF de mi Celular</span>
         </button>
-        <p class="picker-hint">Toca para abrir cualquier archivo PDF de tus descargas o memoria</p>
+        <p class="picker-hint">Tocá el botón para elegir cualquier libro o documento guardado en tus archivos</p>
+        
+        <div class="sample-book-wrapper">
+          <button id="btn-sample-book" type="button" class="btn-sample">
+            <span>📘</span> Probar con el Libro de Ejemplo
+          </button>
+        </div>
       </div>
+
+      <!-- Guía Rápida para el Usuario -->
+      <section class="quick-guide-card">
+        <h3 class="guide-title">💡 ¿Cómo se usa?</h3>
+        <ul class="guide-steps">
+          <li><strong>1.</strong> Elegí tu archivo PDF con el botón amarillo superior.</li>
+          <li><strong>2.</strong> Tocá <strong>"👓 Letra Grande"</strong> para agrandar el texto al tamaño que te resulte cómodo.</li>
+          <li><strong>3.</strong> Tocá <strong>"✨ Filtros"</strong> para poner luz cálida, sepia o modo noche para que no te canse los ojos.</li>
+        </ul>
+      </section>
 
       <!-- Historial de Lectura Reciente -->
       <section class="recents-section">
         <h2 class="section-title">
-          <span>📚</span> Continuar Lectura
+          <span>📚</span> Libros que estabas leyendo
         </h2>
 
         <div id="recent-books-list" class="recent-books-container">
-          <!-- Tarjetas de libros recientes renderizadas dinámicamente -->
+          <!-- Tarjetas de libros recientes -->
         </div>
 
         <div id="empty-recents" class="empty-state">
-          No hay lecturas recientes. Abrí un PDF para comenzar.
+          Todavía no abriste ningún libro. Tocá el botón de arriba para empezar.
         </div>
       </section>
     </section>
 
     <!-- ====================================================================
-         VISTA 2: LECTOR INMERSIVO
+         VISTA 2: LECTOR AMIGABLE PARA ADULTOS
          ==================================================================== -->
     <section id="view-reader" class="hidden">
-      <!-- Barra Superior -->
+      <!-- Barra Superior Principal -->
       <header id="reader-header" class="reader-top-bar">
-        <button id="btn-back-home" class="btn-nav-icon" title="Volver a la biblioteca" aria-label="Volver">
-          ◀
+        <button id="btn-back-home" class="btn-back-action" title="Volver al menú principal">
+          <span>◀</span> Salir
         </button>
 
         <div class="doc-info">
@@ -80,56 +97,78 @@
         </div>
 
         <div class="reader-actions">
-          <button id="btn-fit-width" class="btn-nav-icon" title="Ajustar ancho" aria-label="Ajustar ancho">
-            ↔️
+          <button id="btn-toggle-view-mode" class="btn-toggle-mode" title="Cambiar entre modo texto grande y modo página original">
+            <span>👓</span> Letra Grande
           </button>
-          <button id="btn-open-filters" class="btn-filter-trigger" title="Filtros de luz y confort visual">
+          <button id="btn-open-filters" class="btn-filter-trigger" title="Filtros de luz para descansar la vista">
             <span>✨</span> Filtros
           </button>
         </div>
       </header>
 
-      <!-- Viewport del PDF y Capa Óptica de Luz Cálida -->
-      <div id="pdf-viewport" class="pdf-viewport-area">
-        <div id="warmth-overlay" class="warmth-filter-layer"></div>
+      <!-- Barra de Ajuste de Letra y Tipografía (Fácil y Directa) -->
+      <nav id="font-controls-bar" class="font-controls-bar">
+        <div class="font-stepper">
+          <span class="stepper-label">Letra:</span>
+          <button id="btn-font-decrease" class="btn-font-step" title="Reducir tamaño de letra">A−</button>
+          <span id="font-size-label" class="font-size-badge">Letra: 24px</span>
+          <button id="btn-font-increase" class="btn-font-step" title="Aumentar tamaño de letra">A+</button>
+        </div>
+
+        <div class="font-family-selector">
+          <select id="select-font-family" class="font-select" aria-label="Tipo de letra">
+            <option value="serif">📖 Libro Clásico (Serif)</option>
+            <option value="sans-serif">🔤 Moderna y Limpia</option>
+            <option value="readable">👓 Máxima Legibilidad</option>
+          </select>
+        </div>
+      </nav>
+
+      <!-- Contenedor 1: Modo Letra Grande Adaptable (Reflow) -->
+      <div id="text-view-container" class="text-viewport-area hidden">
+        <article id="text-reading-content" class="text-reading-content">
+          <!-- Texto extraído del PDF con tamaño y tipografía configurable -->
+        </article>
       </div>
 
-      <!-- Barra Inferior de Navegación -->
+      <!-- Contenedor 2: Modo PDF Original (Canvas) -->
+      <div id="pdf-viewport" class="pdf-viewport-area">
+        <!-- Canvas generado por PDF.js -->
+      </div>
+
+      <!-- Capa Óptica de Luz Cálida (Anti-Luz Azul) -->
+      <div id="warmth-overlay" class="warmth-filter-layer"></div>
+
+      <!-- Barra Inferior de Navegación Clara -->
       <footer id="reader-bottom-bar" class="reader-bottom-nav">
-        <button id="btn-prev-page" class="btn-nav-icon" title="Página anterior" aria-label="Anterior">
-          ◀
+        <button id="btn-prev-page" class="btn-page-nav" title="Ir a la página anterior">
+          <span>◀</span> Anterior
         </button>
 
-        <div class="page-stepper">
-          <input type="range" id="page-slider" class="slider-page-nav" min="1" max="1" value="1">
-          <span id="page-info" class="page-counter-badge">1 / 1</span>
+        <div class="page-counter-container">
+          <span id="page-info" class="page-counter-badge">Página 1 de 1</span>
         </div>
 
-        <div class="zoom-controls">
-          <button id="btn-zoom-out" class="btn-nav-icon" title="Reducir zoom" aria-label="Menos zoom">🔍−</button>
-          <button id="btn-zoom-in" class="btn-nav-icon" title="Aumentar zoom" aria-label="Más zoom">🔍+</button>
-        </div>
-
-        <button id="btn-next-page" class="btn-nav-icon" title="Página siguiente" aria-label="Siguiente">
-          ▶
+        <button id="btn-next-page" class="btn-page-nav" title="Ir a la página siguiente">
+          Siguiente <span>▶</span>
         </button>
       </footer>
     </section>
   </main>
 
   <!-- ======================================================================
-       MODAL BOTTOM SHEET: FILTROS DE LUZ Y CONFORT VISUAL
+       MODAL DE FILTROS DE LUZ Y DESCANSO VISUAL
        ====================================================================== -->
   <div id="modal-filters" class="filters-modal hidden">
     <div class="filters-sheet">
       <div class="sheet-handle"></div>
       
       <div class="sheet-header">
-        <h3><span>🛡️</span> Confort Visual y Filtros</h3>
-        <button id="btn-close-filters" class="btn-icon-close" aria-label="Cerrar filtros">✕</button>
+        <h3><span>🛡️</span> Filtros para Descansar la Vista</h3>
+        <button id="btn-close-filters" class="btn-icon-close" aria-label="Cerrar">✕ Cerrar</button>
       </div>
 
-      <!-- Chips de Modos Predefinidos -->
+      <!-- Chips de Modos Predefinidos con Etiquetas Claras -->
       <div id="preset-chips" class="preset-grid">
         <!-- Renderizado dinámico de Normal, Luz Cálida, Sepia, Noche, OLED, e-Ink -->
       </div>
@@ -137,7 +176,7 @@
       <!-- Sliders de Ajuste Fino -->
       <div class="slider-group">
         <div class="slider-label">
-          <span>🔆 Brillo de Lectura</span>
+          <span>🔆 Brillo de Pantalla</span>
           <span id="val-brightness">95%</span>
         </div>
         <input type="range" id="slider-brightness" class="filter-slider" min="25" max="130" value="95">
@@ -145,7 +184,7 @@
 
       <div class="slider-group">
         <div class="slider-label">
-          <span>🌅 Calidez (Filtro Luz Azul)</span>
+          <span>🌅 Calidez (Filtro Anti-Luz Azul)</span>
           <span id="val-warmth">30%</span>
         </div>
         <input type="range" id="slider-warmth" class="filter-slider" min="0" max="100" value="30">
@@ -153,14 +192,14 @@
 
       <div class="slider-group">
         <div class="slider-label">
-          <span>🎚️ Contraste de Texto</span>
+          <span>🎚️ Contraste de Lectura</span>
           <span id="val-contrast">100%</span>
         </div>
         <input type="range" id="slider-contrast" class="filter-slider" min="70" max="140" value="100">
       </div>
 
       <div class="filter-actions">
-        <button id="btn-reset-filters" class="btn-secondary">Restablecer valores</button>
+        <button id="btn-reset-filters" class="btn-secondary">Restablecer valores originales</button>
       </div>
     </div>
   </div>
@@ -179,10 +218,8 @@
     import { PwaManager } from './src/gui/pwa-manager.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Inicializar Controlador de App
       window.app = new AppController();
 
-      // Inicializar Gestor de PWA
       window.pwa = new PwaManager({
         installBannerEl: document.getElementById('pwa-install-banner'),
         installBtnEl: document.getElementById('btn-install-app'),

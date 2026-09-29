@@ -187,6 +187,31 @@ export class PdfViewer {
   }
 
   /**
+   * Extrae el contenido de texto de la página para el Modo Letra Grande Adaptable.
+   */
+  async getPageText(pageNum = this.currentPageNum) {
+    if (!this.pdfDoc) return '';
+    try {
+      const page = await this.pdfDoc.getPage(pageNum);
+      const textContent = await page.getTextContent();
+      const strings = [];
+      let lastY = null;
+      for (const item of textContent.items) {
+        if (!item.str) continue;
+        if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
+          strings.push('\n');
+        }
+        strings.push(item.str + ' ');
+        lastY = item.transform[5];
+      }
+      return strings.join('').trim();
+    } catch (err) {
+      console.warn('[pdf-viewer] Error al extraer texto de página:', err);
+      return '';
+    }
+  }
+
+  /**
    * Libera recursos y memoria.
    */
   destroy() {

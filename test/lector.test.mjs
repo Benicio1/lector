@@ -154,3 +154,58 @@ describe('Persistencia y Biblioteca de Lectura (library-store)', () => {
     assert.equal(pageAfter, 1); // default 1 al no existir
   });
 });
+
+import { TextModeController } from '../src/gui/text-mode-controller.js';
+
+describe('Modo Letra Grande y Tipografías (TextModeController)', () => {
+  it('debe ajustar y limitar el tamaño de letra entre 16px y 42px', () => {
+    const mockContainer = { scrollTop: 0 };
+    const mockTextEl = { style: {}, innerHTML: '' };
+    const controller = new TextModeController({
+      container: mockContainer,
+      textEl: mockTextEl
+    });
+
+    assert.equal(controller.fontSize, 24);
+    controller.setFontSize(50);
+    assert.equal(controller.fontSize, 42); // capped at 42
+    controller.setFontSize(10);
+    assert.equal(controller.fontSize, 16); // min at 16
+
+    controller.increaseFontSize(4);
+    assert.equal(controller.fontSize, 20);
+    controller.decreaseFontSize(2);
+    assert.equal(controller.fontSize, 18);
+  });
+
+  it('debe configurar tipografías válidas', () => {
+    const mockContainer = { scrollTop: 0 };
+    const mockTextEl = { style: {}, innerHTML: '' };
+    const controller = new TextModeController({
+      container: mockContainer,
+      textEl: mockTextEl
+    });
+
+    controller.setFontFamily('sans-serif');
+    assert.equal(controller.fontFamily, 'sans-serif');
+    assert.ok(mockTextEl.style.fontFamily.includes('Segoe UI') || mockTextEl.style.fontFamily.includes('Roboto'));
+
+    controller.setFontFamily('readable');
+    assert.equal(controller.fontFamily, 'readable');
+    assert.ok(mockTextEl.style.fontFamily.includes('Verdana'));
+  });
+
+  it('debe formatear párrafos para lectura fluida', () => {
+    const mockContainer = { scrollTop: 0 };
+    const mockTextEl = { style: {}, innerHTML: '' };
+    const controller = new TextModeController({
+      container: mockContainer,
+      textEl: mockTextEl
+    });
+
+    controller.setPageText('Primer párrafo largo.\n\nSegundo párrafo claro.');
+    assert.ok(mockTextEl.innerHTML.includes('<p class="reading-paragraph">Primer párrafo largo.</p>'));
+    assert.ok(mockTextEl.innerHTML.includes('<p class="reading-paragraph">Segundo párrafo claro.</p>'));
+  });
+});
+

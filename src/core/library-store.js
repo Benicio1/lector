@@ -16,7 +16,11 @@ const DEFAULT_SETTINGS = {
   warmth: 30,
   contrast: 100,
   readingMode: 'paged', // 'paged' | 'continuous'
-  fitMode: 'width' // 'width' | 'page' | 'custom'
+  fitMode: 'width', // 'width' | 'page' | 'custom'
+  fontSize: 24, // Tamaño de letra en px para adultos (16 a 40)
+  fontFamily: 'serif', // 'serif' | 'sans-serif' | 'opendyslexic'
+  viewMode: 'page', // 'page' (visor canvas) | 'text' (modo texto grande)
+  zoomPercent: 120 // Porcentaje de zoom de página (80 a 300)
 };
 
 /**

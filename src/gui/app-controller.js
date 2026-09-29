@@ -1,7 +1,7 @@
 /**
  * app-controller.js — Controlador Principal de la Interfaz del Lector Móvil
  * Integra modo letra grande para adultos, inmersión táctil, filtros y visor PDF.
- * Cumple con el límite de 400 líneas de AGENTS.md.
+ * Cumple estrictamente con el límite de 400 líneas de AGENTS.md.
  */
 
 import {
@@ -24,6 +24,7 @@ import { PdfViewer } from '../core/pdf-viewer.js';
 import { TextModeController } from './text-mode-controller.js';
 import { FilterModalController } from './filter-modal-controller.js';
 import { RecentShelf } from './recent-shelf.js';
+import { ImmersionController } from './immersion-controller.js';
 
 export class AppController {
   constructor() {
@@ -31,10 +32,9 @@ export class AppController {
     this.textController = null;
     this.filterModal = null;
     this.recentShelf = null;
+    this.immersion = null;
     this.settings = loadSettings();
     this.currentFile = null;
-    this.barsHidden = false;
-    this.isForcedLandscape = false;
     this.activePreset = this.settings.preset || PRESET_MODES.WARM;
     this.viewMode = this.settings.viewMode || 'text';
 
@@ -43,6 +43,7 @@ export class AppController {
     this.initTextController();
     this.initFilterModal();
     this.initRecentShelf();
+    this.initImmersion();
     this.bindEvents();
     this.applyVisualFilters();
     this.updateModeUi();
@@ -173,6 +174,20 @@ export class AppController {
     this.recentShelf.render();
   }
 
+  initImmersion() {
+    this.immersion = new ImmersionController({
+      viewReader: this.viewReader,
+      headerBar: this.headerBar,
+      fontControlsBar: this.fontControlsBar,
+      bottomBar: this.bottomBar,
+      floatingRestorePill: this.floatingRestorePill,
+      btnToggleRotation: this.btnToggleRotation,
+      btnToggleImmersion: this.btnToggleImmersion,
+      textContainer: this.textContainer,
+      pdfContainer: this.pdfContainer
+    });
+  }
+
   bindEvents() {
     this.btnPickFile.addEventListener('click', () => this.fileInput.click());
     this.fileInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files[0]));
@@ -202,21 +217,6 @@ export class AppController {
       this.updateModeUi();
       if (this.viewMode === 'text') this.syncCurrentPageText();
     });
-
-    // Botón de giro de pantalla (Horizontal / Vertical)
-    if (this.btnToggleRotation) {
-      this.btnToggleRotation.addEventListener('click', () => this.toggleRotation());
-    }
-
-    // Botón de inmersión explícito en cabecera
-    if (this.btnToggleImmersion) {
-      this.btnToggleImmersion.addEventListener('click', () => this.toggleImmersion());
-    }
-
-    // Botón flotante para restaurar controles
-    if (this.floatingRestorePill) {
-      this.floatingRestorePill.addEventListener('click', () => this.toggleImmersion(false));
-    }
 
     // Controles de tamaño de letra (Modo Texto)
     this.btnFontDecrease.addEventListener('click', () => {
@@ -259,72 +259,11 @@ export class AppController {
 
     this.btnOpenFilters.addEventListener('click', () => this.filterModal.open(this.settings));
 
-    // Detección unificada de tap táctil en la pantalla de lectura para ocultar/mostrar barras
-    this.bindTapImmersion();
-
     window.addEventListener('keydown', (e) => {
       if (this.viewReader.classList.contains('hidden')) return;
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') this.navigatePage(1);
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') this.navigatePage(-1);
     });
-  }
-
-  bindTapImmersion() {
-    let pointerStart = null;
-
-    this.viewReader.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('button, select, input, a, .filters-sheet, .font-stepper, .reader-top-bar, .reader-bottom-nav')) {
-        return;
-      }
-      pointerStart = { x: e.clientX, y: e.clientY, time: Date.now() };
-    }, { passive: true });
-
-    this.viewReader.addEventListener('pointerup', (e) => {
-      if (!pointerStart) return;
-      if (e.target.closest('button, select, input, a, .filters-sheet, .font-stepper, .reader-top-bar, .reader-bottom-nav')) {
-        pointerStart = null;
-        return;
-      }
-      const deltaX = Math.abs(e.clientX - pointerStart.x);
-      const deltaY = Math.abs(e.clientY - pointerStart.y);
-      const elapsed = Date.now() - pointerStart.time;
-      pointerStart = null;
-
-      // Disparar solo si fue un tap intencional y no un arrastre de scroll
-      if (deltaX < 15 && deltaY < 15 && elapsed < 400) {
-        this.toggleImmersion();
-      }
-    });
-  }
-
-  toggleImmersion(forceState) {
-    this.barsHidden = forceState !== undefined ? forceState : !this.barsHidden;
-    this.headerBar.classList.toggle('bars-hidden', this.barsHidden);
-    this.fontControlsBar.classList.toggle('bars-hidden', this.barsHidden);
-    this.bottomBar.classList.toggle('bars-hidden', this.barsHidden);
-    if (this.floatingRestorePill) {
-      this.floatingRestorePill.classList.toggle('hidden', !this.barsHidden);
-    }
-  }
-
-  toggleRotation() {
-    this.isForcedLandscape = !this.isForcedLandscape;
-    this.viewReader.classList.toggle('forced-landscape', this.isForcedLandscape);
-    if (this.btnToggleRotation) {
-      this.btnToggleRotation.classList.toggle('active-rotation', this.isForcedLandscape);
-      this.btnToggleRotation.innerHTML = this.isForcedLandscape ? '<span>📱</span> Vertical' : '<span>🔄</span> Girar';
-    }
-
-    // Intento de bloqueo de orientación por Screen Orientation API nativa
-    try {
-      if (screen.orientation && typeof screen.orientation.lock === 'function') {
-        if (this.isForcedLandscape) {
-          screen.orientation.lock('landscape').catch(() => {});
-        } else if (typeof screen.orientation.unlock === 'function') {
-          screen.orientation.unlock();
-        }
-      }
-    } catch (_) {}
   }
 
   async navigatePage(delta) {
@@ -377,7 +316,7 @@ export class AppController {
 
     this.viewLibrary.classList.add('hidden');
     this.viewReader.classList.remove('hidden');
-    this.toggleImmersion(false);
+    this.immersion.toggleImmersion(false);
 
     try {
       const arrayBuffer = await file.arrayBuffer();
@@ -409,10 +348,7 @@ export class AppController {
   }
 
   showLibraryView() {
-    if (this.isForcedLandscape) {
-      this.toggleRotation();
-    }
-    this.toggleImmersion(false);
+    this.immersion.resetOnExit();
     this.viewReader.classList.add('hidden');
     this.viewLibrary.classList.remove('hidden');
     this.recentShelf.render();

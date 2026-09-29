@@ -1,6 +1,6 @@
 /**
  * reader.css — Estilos de la Pantalla de Lectura, Texto Grande y Modo Inmersión
- * Optimizado para pantallas de celular con controles accesibles para adultos.
+ * Optimizado para pantallas de celular con controles transparentes y lectura limpia.
  * Cumple con el límite de 400 líneas de AGENTS.md.
  */
 
@@ -9,9 +9,7 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: var(--reader-viewport-bg, #18181b);
-  display: flex;
-  flex-direction: column;
+  background-color: var(--reader-canvas-bg, #fef9ee);
 }
 
 /* ==========================================================================
@@ -29,20 +27,31 @@
   overflow: hidden;
 }
 
+#view-reader.forced-landscape .reader-top-bar { height: 40px; }
+#view-reader.forced-landscape .font-controls-bar { top: 40px; }
+#view-reader.forced-landscape .reader-bottom-nav { height: 40px; }
+#view-reader.forced-landscape .text-viewport-area { padding: 86px 14px 46px; }
+#view-reader.forced-landscape.bars-hidden .text-viewport-area { padding: 10px 14px 16px; }
+
 /* ==========================================================================
-   BARRAS DE NAVEGACIÓN Y ANIMACIÓN DE INMERSIÓN
+   BARRAS FLOTANTES TRANSPARENTES (FROSTED GLASS)
    ========================================================================== */
 .reader-top-bar {
-  height: 56px;
-  background-color: #18181b;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: rgba(24, 24, 27, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 8px;
-  z-index: 30;
-  border-bottom: 1px solid #27272a;
-  flex-shrink: 0;
-  transition: transform 0.25s ease, opacity 0.2s ease;
+  z-index: 40;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
 .reader-top-bar.bars-hidden {
@@ -52,13 +61,13 @@
 }
 
 .btn-back-action {
-  background: #27272a;
-  border: 1px solid #3f3f46;
+  background: rgba(39, 39, 42, 0.85);
+  border: 1px solid rgba(63, 63, 70, 0.7);
   color: #e4e4e7;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 7px 9px;
+  border-radius: 9px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -72,7 +81,7 @@
 }
 
 .doc-title {
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 600;
   color: #f4f4f5;
   white-space: nowrap;
@@ -87,14 +96,14 @@
   gap: 5px;
 }
 
-.btn-rotate-action {
-  background: #27272a;
-  border: 1px solid #3f3f46;
+.btn-rotate-action, .btn-immersion-action, .btn-toggle-mode {
+  background: rgba(39, 39, 42, 0.85);
+  border: 1px solid rgba(63, 63, 70, 0.7);
   color: #fbbf24;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 7px 9px;
+  border-radius: 9px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -102,49 +111,19 @@
   white-space: nowrap;
 }
 
-.btn-immersion-action {
-  background: #27272a;
-  border: 1px solid #3f3f46;
-  color: #e4e4e7;
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 8px 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-}
-
-.btn-toggle-mode {
-  background: #27272a;
-  border: 1px solid #d97706;
-  color: #fbbf24;
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 8px 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-}
-
+.btn-immersion-action { color: #e4e4e7; }
 .btn-toggle-mode.active-text-mode {
-  background: rgba(245, 158, 11, 0.2);
+  background: rgba(245, 158, 11, 0.25);
   border-color: #f59e0b;
-  color: #fbbf24;
 }
 
 .btn-filter-trigger {
   background: linear-gradient(135deg, #d97706, #b45309);
   color: #ffffff;
   border: none;
-  border-radius: 10px;
-  padding: 8px 10px;
-  font-size: 0.85rem;
+  border-radius: 9px;
+  padding: 7px 9px;
+  font-size: 0.82rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -157,15 +136,21 @@
    BARRA DE CONTROLES: FUENTES Y ZOOM
    ========================================================================== */
 .font-controls-bar {
-  background-color: #212124;
-  border-bottom: 1px solid #2e2e33;
+  position: absolute;
+  top: 52px;
+  left: 0;
+  right: 0;
+  background: rgba(33, 33, 36, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   padding: 6px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  flex-shrink: 0;
-  transition: transform 0.25s ease, opacity 0.2s ease;
+  z-index: 39;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
 .font-controls-bar.bars-hidden {
@@ -181,18 +166,18 @@
 }
 
 .stepper-label {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #a1a1aa;
 }
 
 .btn-font-step {
-  background-color: #2e2e33;
+  background-color: rgba(46, 46, 51, 0.85);
   color: #ffffff;
   border: 1px solid #4a4a52;
   border-radius: 8px;
-  width: 38px;
-  height: 38px;
-  font-size: 1.1rem;
+  width: 36px;
+  height: 36px;
+  font-size: 1.05rem;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -201,16 +186,16 @@
 }
 
 .font-size-badge {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: #fbbf24;
-  min-width: 60px;
+  min-width: 55px;
   text-align: center;
 }
 
 .font-family-selector {
   flex: 1;
-  max-width: 200px;
+  max-width: 190px;
 }
 
 .font-select {
@@ -219,8 +204,8 @@
   color: #f4f4f5;
   border: 1px solid #4a4a52;
   border-radius: 8px;
-  padding: 7px 8px;
-  font-size: 0.88rem;
+  padding: 6px 8px;
+  font-size: 0.85rem;
   font-weight: 600;
   outline: none;
 }
@@ -229,27 +214,34 @@
   background: #2e2e33;
   border: 1px solid #4a4a52;
   color: #fef3c7;
-  padding: 7px 10px;
+  padding: 6px 9px;
   border-radius: 8px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-  white-space: nowrap;
 }
 
 /* ==========================================================================
    ÁREA DE LECTURA 1: MODO TEXTO ADAPTABLE (REFLOW)
    ========================================================================== */
 .text-viewport-area {
-  flex: 1;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   overflow-y: auto;
-  padding: 24px 20px 80px;
+  padding: 110px 20px 70px;
   background-color: var(--reader-canvas-bg, #fef9ee);
   color: var(--reader-text-color, #1e293b);
   display: flex;
   justify-content: center;
   -webkit-overflow-scrolling: touch;
-  cursor: pointer;
+  transition: padding 0.25s ease;
+  box-sizing: border-box;
+}
+
+#view-reader.bars-hidden .text-viewport-area {
+  padding: 18px 20px 28px;
 }
 
 .text-reading-content {
@@ -268,8 +260,6 @@
   text-align: left;
   letter-spacing: 0.3px;
   word-break: break-word;
-  font-family: inherit;
-  font-size: inherit;
 }
 
 .empty-page-text {
@@ -283,14 +273,22 @@
    ÁREA DE LECTURA 2: MODO PDF ORIGINAL (CANVAS SIN DISTORSIÓN)
    ========================================================================== */
 .pdf-viewport-area {
-  flex: 1;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   overflow: auto;
   display: block;
   text-align: center;
-  padding: 16px 8px 80px;
+  padding: 110px 8px 70px;
   background-color: var(--reader-viewport-bg, #18181b);
   -webkit-overflow-scrolling: touch;
-  cursor: pointer;
+  transition: padding 0.25s ease;
+  box-sizing: border-box;
+}
+
+#view-reader.bars-hidden .pdf-viewport-area {
+  padding: 14px 8px 18px;
 }
 
 .pdf-page-canvas {
@@ -304,19 +302,24 @@
 }
 
 /* ==========================================================================
-   BARRA INFERIOR DE PÁGINAS
+   BARRA INFERIOR DE PÁGINAS TRANSPARENTE
    ========================================================================== */
 .reader-bottom-nav {
-  height: 58px;
-  background-color: #18181b;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  background: rgba(24, 24, 27, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 12px;
-  border-top: 1px solid #27272a;
-  flex-shrink: 0;
-  z-index: 30;
-  transition: transform 0.25s ease, opacity 0.2s ease;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 40;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
 .reader-bottom-nav.bars-hidden {
@@ -326,18 +329,18 @@
 }
 
 .btn-page-nav {
-  background: linear-gradient(145deg, #27272a, #202024);
-  border: 1px solid #3f3f46;
+  background: rgba(39, 39, 42, 0.85);
+  border: 1px solid rgba(63, 63, 70, 0.7);
   color: #f4f4f5;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  padding: 10px 18px;
-  border-radius: 12px;
+  padding: 8px 16px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-  min-height: 44px;
+  min-height: 40px;
 }
 
 .btn-page-nav:disabled {
@@ -345,37 +348,44 @@
   cursor: not-allowed;
 }
 
-.page-counter-container {
-  text-align: center;
-}
-
 .page-counter-badge {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: #fbbf24;
   font-weight: 800;
 }
 
-/* Botón flotante para restaurar controles en pantalla completa */
+/* ==========================================================================
+   BOTÓN FLOTANTE AUTO-DESVANECIBLE (FROSTED GLASS PILL)
+   ========================================================================== */
 .floating-restore-pill {
-  position: fixed;
-  bottom: 20px;
+  position: absolute;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(24, 24, 27, 0.92);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(24, 24, 27, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(245, 158, 11, 0.6);
   color: #fbbf24;
-  padding: 10px 20px;
+  padding: 8px 18px;
   border-radius: 24px;
-  font-size: 0.92rem;
+  font-size: 0.86rem;
   font-weight: 800;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   z-index: 60;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  opacity: 1;
+  transition: opacity 0.4s ease, transform 0.35s ease;
+  pointer-events: auto;
+}
+
+.floating-restore-pill.fade-out {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(-50%) translateY(16px);
 }
 
 .floating-restore-pill:active {
@@ -386,50 +396,20 @@
    MODO HORIZONTAL COMPACTO (LANDSCAPE)
    ========================================================================== */
 @media (orientation: landscape) and (max-height: 520px) {
-  .reader-top-bar {
-    height: 40px;
-    padding: 0 6px;
-  }
+  .reader-top-bar { height: 38px; padding: 0 6px; }
   .btn-back-action, .btn-rotate-action, .btn-immersion-action, .btn-toggle-mode, .btn-filter-trigger {
-    padding: 4px 6px;
-    font-size: 0.78rem;
+    padding: 3px 6px; font-size: 0.75rem;
   }
-  .doc-title {
-    font-size: 0.8rem;
-  }
-  .font-controls-bar {
-    padding: 2px 6px;
-    gap: 4px;
-  }
-  .btn-font-step {
-    width: 28px;
-    height: 28px;
-    font-size: 0.9rem;
-  }
-  .font-size-badge {
-    font-size: 0.78rem;
-    min-width: 55px;
-  }
-  .font-select {
-    padding: 3px 4px;
-    font-size: 0.78rem;
-  }
-  .reader-bottom-nav {
-    height: 40px;
-    padding: 0 6px;
-  }
-  .btn-page-nav {
-    padding: 5px 10px;
-    font-size: 0.82rem;
-    min-height: 32px;
-  }
-  .page-counter-badge {
-    font-size: 0.85rem;
-  }
-  .text-viewport-area {
-    padding: 10px 12px 30px;
-  }
-  .pdf-viewport-area {
-    padding: 8px 4px 30px;
-  }
+  .doc-title { font-size: 0.78rem; }
+  .font-controls-bar { top: 38px; padding: 2px 6px; gap: 4px; }
+  .btn-font-step { width: 28px; height: 28px; font-size: 0.85rem; }
+  .font-size-badge { font-size: 0.75rem; min-width: 50px; }
+  .font-select { padding: 3px 4px; font-size: 0.75rem; }
+  .reader-bottom-nav { height: 38px; padding: 0 6px; }
+  .btn-page-nav { padding: 4px 10px; font-size: 0.78rem; min-height: 30px; }
+  .page-counter-badge { font-size: 0.8rem; }
+  .text-viewport-area { padding: 84px 14px 44px; }
+  .pdf-viewport-area { padding: 84px 4px 44px; }
+  #view-reader.bars-hidden .text-viewport-area { padding: 8px 14px 16px; }
+  #view-reader.bars-hidden .pdf-viewport-area { padding: 8px 4px 12px; }
 }

@@ -10,7 +10,6 @@ export class ImmersionController {
     headerBar,
     fontControlsBar,
     bottomBar,
-    floatingRestorePill,
     btnToggleRotation,
     btnToggleImmersion,
     textContainer,
@@ -20,7 +19,6 @@ export class ImmersionController {
     this.headerBar = headerBar;
     this.fontControlsBar = fontControlsBar;
     this.bottomBar = bottomBar;
-    this.floatingRestorePill = floatingRestorePill;
     this.btnToggleRotation = btnToggleRotation;
     this.btnToggleImmersion = btnToggleImmersion;
     this.textContainer = textContainer;
@@ -29,7 +27,6 @@ export class ImmersionController {
     this.barsHidden = false;
     this.isForcedLandscape = false;
     this.autoHideTimeout = null;
-    this.pillTimeout = null;
 
     this.init();
   }
@@ -45,13 +42,6 @@ export class ImmersionController {
     }
     if (this.btnToggleImmersion) {
       this.btnToggleImmersion.addEventListener('click', () => this.toggleImmersion());
-    }
-    if (this.floatingRestorePill) {
-      this.floatingRestorePill.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.toggleImmersion(false);
-        this.scheduleAutoHide(4500);
-      });
     }
 
     const keepAlive = () => {
@@ -132,18 +122,8 @@ export class ImmersionController {
     this.bottomBar.classList.toggle('bars-hidden', this.barsHidden);
 
     clearTimeout(this.autoHideTimeout);
-    clearTimeout(this.pillTimeout);
-
-    if (this.floatingRestorePill) {
-      if (this.barsHidden) {
-        this.floatingRestorePill.classList.remove('hidden', 'fade-out');
-        this.pillTimeout = setTimeout(() => {
-          this.floatingRestorePill.classList.add('fade-out');
-        }, 2200);
-      } else {
-        this.floatingRestorePill.classList.add('hidden', 'fade-out');
-        this.scheduleAutoHide(4000);
-      }
+    if (!this.barsHidden) {
+      this.scheduleAutoHide(4000);
     }
   }
 

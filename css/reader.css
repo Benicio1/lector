@@ -354,43 +354,7 @@
   font-weight: 800;
 }
 
-/* ==========================================================================
-   BOTÓN FLOTANTE AUTO-DESVANECIBLE (FROSTED GLASS PILL)
-   ========================================================================== */
-.floating-restore-pill {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(24, 24, 27, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(245, 158, 11, 0.6);
-  color: #fbbf24;
-  padding: 8px 18px;
-  border-radius: 24px;
-  font-size: 0.86rem;
-  font-weight: 800;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  z-index: 60;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  opacity: 1;
-  transition: opacity 0.4s ease, transform 0.35s ease;
-  pointer-events: auto;
-}
 
-.floating-restore-pill.fade-out {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transform: translateX(-50%) translateY(16px);
-}
-
-.floating-restore-pill:active {
-  transform: translateX(-50%) scale(0.96);
-}
 
 /* ==========================================================================
    MODO HORIZONTAL COMPACTO (LANDSCAPE)

@@ -67,7 +67,6 @@ export class AppController {
     this.headerBar = document.getElementById('reader-header');
     this.fontControlsBar = document.getElementById('font-controls-bar');
     this.bottomBar = document.getElementById('reader-bottom-bar');
-    this.floatingRestorePill = document.getElementById('floating-restore-pill');
 
     this.docTitleEl = document.getElementById('doc-title');
     this.pageInfoEl = document.getElementById('page-info');
@@ -180,7 +179,6 @@ export class AppController {
       headerBar: this.headerBar,
       fontControlsBar: this.fontControlsBar,
       bottomBar: this.bottomBar,
-      floatingRestorePill: this.floatingRestorePill,
       btnToggleRotation: this.btnToggleRotation,
       btnToggleImmersion: this.btnToggleImmersion,
       textContainer: this.textContainer,

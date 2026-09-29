@@ -3,7 +3,7 @@
  * Estrategia Cache-First para funcionamiento 100% autónomo y offline sin internet.
  */
 
-const CACHE_NAME = 'lector-pdf-v1.3.8';
+const CACHE_NAME = 'lector-pdf-v1.3.9';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -17,6 +17,7 @@ const ASSETS_TO_CACHE = [
   './vendor/pdf.worker.min.js',
   './src/core/filter-engine.js',
   './src/core/library-store.js',
+  './src/core/book-cache.js',
   './src/core/pdf-viewer.js',
   './src/gui/app-controller.js',
   './src/gui/recent-shelf.js',

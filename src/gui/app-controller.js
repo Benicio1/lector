@@ -17,8 +17,11 @@ import {
   loadSettings,
   saveSettings,
   recordBookProgress,
-  getSavedPage
+  getSavedPage,
+  generateBookId
 } from '../core/library-store.js';
+
+import { saveBookFile, getBookFile } from '../core/book-cache.js';
 
 import { PdfViewer } from '../core/pdf-viewer.js';
 import { TextModeController } from './text-mode-controller.js';
@@ -50,44 +53,39 @@ export class AppController {
   }
 
   cacheDom() {
-    this.viewLibrary = document.getElementById('view-library');
-    this.viewReader = document.getElementById('view-reader');
-    this.fileInput = document.getElementById('file-input');
-    this.btnPickFile = document.getElementById('btn-pick-file');
-    this.btnSampleBook = document.getElementById('btn-sample-book');
-    this.dropZone = document.getElementById('drop-zone');
-    this.recentListEl = document.getElementById('recent-books-list');
-    this.emptyRecentsEl = document.getElementById('empty-recents');
-
-    this.pdfContainer = document.getElementById('pdf-viewport');
-    this.textContainer = document.getElementById('text-view-container');
-    this.textReadingContent = document.getElementById('text-reading-content');
-    this.warmthOverlay = document.getElementById('warmth-overlay');
-
-    this.headerBar = document.getElementById('reader-header');
-    this.fontControlsBar = document.getElementById('font-controls-bar');
-    this.bottomBar = document.getElementById('reader-bottom-bar');
-
-    this.docTitleEl = document.getElementById('doc-title');
-    this.pageInfoEl = document.getElementById('page-info');
-    this.btnBackHome = document.getElementById('btn-back-home');
-    this.btnPrev = document.getElementById('btn-prev-page');
-    this.btnNext = document.getElementById('btn-next-page');
-
-    this.btnToggleViewMode = document.getElementById('btn-toggle-view-mode');
-    this.controlsTextMode = document.getElementById('controls-text-mode');
-    this.controlsPdfMode = document.getElementById('controls-pdf-mode');
-
-    this.btnFontDecrease = document.getElementById('btn-font-decrease');
-    this.btnFontIncrease = document.getElementById('btn-font-increase');
-    this.fontSizeLabel = document.getElementById('font-size-label');
-    this.selectFontFamily = document.getElementById('select-font-family');
-
-    this.btnZoomDecrease = document.getElementById('btn-zoom-decrease');
-    this.btnZoomIncrease = document.getElementById('btn-zoom-increase');
-    this.zoomSizeLabel = document.getElementById('zoom-size-label');
-    this.btnFitWidth = document.getElementById('btn-fit-width');
-    this.btnOpenFilters = document.getElementById('btn-open-filters');
+    const byId = (id) => document.getElementById(id);
+    this.viewLibrary = byId('view-library');
+    this.viewReader = byId('view-reader');
+    this.fileInput = byId('file-input');
+    this.btnPickFile = byId('btn-pick-file');
+    this.btnSampleBook = byId('btn-sample-book');
+    this.dropZone = byId('drop-zone');
+    this.recentListEl = byId('recent-books-list');
+    this.emptyRecentsEl = byId('empty-recents');
+    this.pdfContainer = byId('pdf-viewport');
+    this.textContainer = byId('text-view-container');
+    this.textReadingContent = byId('text-reading-content');
+    this.warmthOverlay = byId('warmth-overlay');
+    this.headerBar = byId('reader-header');
+    this.fontControlsBar = byId('font-controls-bar');
+    this.bottomBar = byId('reader-bottom-bar');
+    this.docTitleEl = byId('doc-title');
+    this.pageInfoEl = byId('page-info');
+    this.btnBackHome = byId('btn-back-home');
+    this.btnPrev = byId('btn-prev-page');
+    this.btnNext = byId('btn-next-page');
+    this.btnToggleViewMode = byId('btn-toggle-view-mode');
+    this.controlsTextMode = byId('controls-text-mode');
+    this.controlsPdfMode = byId('controls-pdf-mode');
+    this.btnFontDecrease = byId('btn-font-decrease');
+    this.btnFontIncrease = byId('btn-font-increase');
+    this.fontSizeLabel = byId('font-size-label');
+    this.selectFontFamily = byId('select-font-family');
+    this.btnZoomDecrease = byId('btn-zoom-decrease');
+    this.btnZoomIncrease = byId('btn-zoom-increase');
+    this.zoomSizeLabel = byId('zoom-size-label');
+    this.btnFitWidth = byId('btn-fit-width');
+    this.btnOpenFilters = byId('btn-open-filters');
   }
 
   initPdfViewer() {
@@ -124,22 +122,14 @@ export class AppController {
   }
 
   initFilterModal() {
+    const byId = (id) => document.getElementById(id);
     this.filterModal = new FilterModalController({
-      modalEl: document.getElementById('modal-filters'),
-      chipsContainerEl: document.getElementById('preset-chips'),
+      modalEl: byId('modal-filters'),
+      chipsContainerEl: byId('preset-chips'),
       sliders: {
-        brightness: {
-          input: document.getElementById('slider-brightness'),
-          valEl: document.getElementById('val-brightness')
-        },
-        warmth: {
-          input: document.getElementById('slider-warmth'),
-          valEl: document.getElementById('val-warmth')
-        },
-        contrast: {
-          input: document.getElementById('slider-contrast'),
-          valEl: document.getElementById('val-contrast')
-        }
+        brightness: { input: byId('slider-brightness'), valEl: byId('val-brightness') },
+        warmth: { input: byId('slider-warmth'), valEl: byId('val-warmth') },
+        contrast: { input: byId('slider-contrast'), valEl: byId('val-contrast') }
       },
       onFilterChange: (changes) => {
         if (changes.preset) this.activePreset = changes.preset;
@@ -148,11 +138,7 @@ export class AppController {
       },
       onReset: () => {
         const cfg = PRESET_CONFIGS[this.activePreset] || PRESET_CONFIGS[PRESET_MODES.NORMAL];
-        this.settings = saveSettings({
-          brightness: cfg.brightness,
-          warmth: cfg.warmth,
-          contrast: cfg.contrast
-        });
+        this.settings = saveSettings({ brightness: cfg.brightness, warmth: cfg.warmth, contrast: cfg.contrast });
         this.filterModal.syncSliders(this.settings);
         this.applyVisualFilters();
       }
@@ -163,10 +149,7 @@ export class AppController {
     this.recentShelf = new RecentShelf({
       listEl: this.recentListEl,
       emptyEl: this.emptyRecentsEl,
-      onSelectBook: (book) => {
-        alert(`Para reanudar "${book.name}", selecciona el archivo en tu teléfono. Se abrirá en la página ${book.currentPage}.`);
-        this.fileInput.click();
-      }
+      onSelectBook: (book) => this.resumeBook(book)
     });
     this.recentShelf.render();
   }
@@ -185,14 +168,9 @@ export class AppController {
   bindEvents() {
     this.btnPickFile.addEventListener('click', () => this.fileInput.click());
     this.fileInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files[0]));
-    if (this.btnSampleBook) {
-      this.btnSampleBook.addEventListener('click', () => this.loadSampleBook());
-    }
+    if (this.btnSampleBook) this.btnSampleBook.addEventListener('click', () => this.loadSampleBook());
 
-    this.dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      this.dropZone.classList.add('drag-over');
-    });
+    this.dropZone.addEventListener('dragover', (e) => { e.preventDefault(); this.dropZone.classList.add('drag-over'); });
     this.dropZone.addEventListener('dragleave', () => this.dropZone.classList.remove('drag-over'));
     this.dropZone.addEventListener('drop', (e) => {
       e.preventDefault();
@@ -214,44 +192,27 @@ export class AppController {
 
     // Controles de tamaño de letra (Modo Texto)
     this.btnFontDecrease.addEventListener('click', () => {
-      this.textController.decreaseFontSize(2);
-      this.fontSizeLabel.textContent = `${this.textController.fontSize}px`;
+      this.fontSizeLabel.textContent = `${this.textController.decreaseFontSize(2)}px`;
     });
-
     this.btnFontIncrease.addEventListener('click', () => {
-      this.textController.increaseFontSize(2);
-      this.fontSizeLabel.textContent = `${this.textController.fontSize}px`;
+      this.fontSizeLabel.textContent = `${this.textController.increaseFontSize(2)}px`;
     });
-
     if (this.selectFontFamily) {
-      this.selectFontFamily.addEventListener('change', (e) => {
-        this.textController.setFontFamily(e.target.value);
-      });
+      this.selectFontFamily.addEventListener('change', (e) => this.textController.setFontFamily(e.target.value));
     }
 
     // Controles de zoom (Modo PDF)
-    if (this.btnZoomDecrease) {
-      this.btnZoomDecrease.addEventListener('click', () => {
-        this.viewer.zoom(0.85);
-        this.updateZoomLabel();
-      });
-    }
-
-    if (this.btnZoomIncrease) {
-      this.btnZoomIncrease.addEventListener('click', () => {
-        this.viewer.zoom(1.2);
-        this.updateZoomLabel();
-      });
-    }
-
-    if (this.btnFitWidth) {
-      this.btnFitWidth.addEventListener('click', () => {
-        this.viewer.fitToWidth();
-        this.updateZoomLabel();
-      });
-    }
-
+    this.btnZoomDecrease?.addEventListener('click', () => { this.viewer.zoom(0.85); this.updateZoomLabel(); });
+    this.btnZoomIncrease?.addEventListener('click', () => { this.viewer.zoom(1.2); this.updateZoomLabel(); });
+    this.btnFitWidth?.addEventListener('click', () => { this.viewer.fitToWidth(); this.updateZoomLabel(); });
     this.btnOpenFilters.addEventListener('click', () => this.filterModal.open(this.settings));
+
+    window.addEventListener('keydown', (e) => {
+      if (this.viewReader.classList.contains('hidden')) return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') this.navigatePage(1);
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') this.navigatePage(-1);
+    });
+  }
 
     window.addEventListener('keydown', (e) => {
       if (this.viewReader.classList.contains('hidden')) return;
@@ -297,6 +258,41 @@ export class AppController {
     if (this.zoomSizeLabel) this.zoomSizeLabel.textContent = `${pct}%`;
   }
 
+  async resumeBook(book) {
+    if (!book) return;
+    try {
+      const cached = await getBookFile(book.id);
+      if (cached) {
+        await this.openDocumentBuffer(cached, {
+          name: book.name,
+          size: book.size,
+          initialPage: book.currentPage
+        });
+        return;
+      }
+    } catch (err) {
+      console.warn('[AppController] Error al reanudar libro desde caché:', err);
+    }
+    this.pendingResumePage = book.currentPage;
+    this.fileInput.click();
+  }
+
+  async openDocumentBuffer(data, { name, size, initialPage = 1 } = {}) {
+    this.currentFile = { name, size };
+    this.docTitleEl.textContent = name;
+    this.viewLibrary.classList.add('hidden');
+    this.viewReader.classList.remove('hidden');
+    this.immersion.toggleImmersion(false);
+
+    try {
+      await this.viewer.loadDocument({ data }, { name, size, initialPage });
+      if (this.viewMode === 'text') await this.syncCurrentPageText();
+    } catch (err) {
+      alert('Error al leer el archivo PDF: ' + err.message);
+      this.showLibraryView();
+    }
+  }
+
   async handleFileSelection(file) {
     if (!file) return;
     if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
@@ -304,22 +300,18 @@ export class AppController {
       return;
     }
 
-    this.currentFile = file;
-    this.docTitleEl.textContent = file.name;
-    const initialPage = getSavedPage(file.name, file.size);
-
-    this.viewLibrary.classList.add('hidden');
-    this.viewReader.classList.remove('hidden');
-    this.immersion.toggleImmersion(false);
+    const initialPage = this.pendingResumePage || getSavedPage(file.name, file.size);
+    this.pendingResumePage = null;
 
     try {
       const arrayBuffer = await file.arrayBuffer();
-      await this.viewer.loadDocument({ data: arrayBuffer }, {
+      const bookId = generateBookId(file.name, file.size);
+      await saveBookFile(bookId, arrayBuffer);
+      await this.openDocumentBuffer(arrayBuffer, {
         name: file.name,
         size: file.size,
         initialPage
       });
-      if (this.viewMode === 'text') await this.syncCurrentPageText();
     } catch (err) {
       alert('Error al leer el archivo PDF: ' + err.message);
       this.showLibraryView();
@@ -330,12 +322,12 @@ export class AppController {
     try {
       const res = await fetch('libro_de_ejemplo.pdf');
       const buf = await res.arrayBuffer();
-      const fakeFile = {
-        name: 'Libro de Ejemplo (Confort Visual).pdf',
-        size: buf.byteLength,
-        arrayBuffer: async () => buf
-      };
-      await this.handleFileSelection(fakeFile);
+      const name = 'Libro de Ejemplo (Confort Visual).pdf';
+      const size = buf.byteLength;
+      const initialPage = getSavedPage(name, size);
+      const bookId = generateBookId(name, size);
+      await saveBookFile(bookId, buf);
+      await this.openDocumentBuffer(buf, { name, size, initialPage });
     } catch (err) {
       alert('No se pudo abrir el libro de ejemplo: ' + err.message);
     }

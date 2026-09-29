@@ -262,3 +262,30 @@ describe('Modo Letra Grande y Tipografías (TextModeController)', () => {
   });
 });
 
+import { saveBookFile, getBookFile, deleteBookFile } from '../src/core/book-cache.js';
+
+describe('Caché Local Persistente de Libros (book-cache)', () => {
+  it('debe guardar, recuperar y eliminar datos binarios de libros para reanudación directa', async () => {
+    const bookId = 'haroldo_conti_como_un_leon_524288';
+    const fakeData = new Uint8Array([37, 80, 68, 70, 45, 49, 46, 55]).buffer; // %PDF-1.7
+
+    // Guardar
+    const saved = await saveBookFile(bookId, fakeData);
+    assert.equal(saved, true);
+
+    // Recuperar directamente sin buscar en el dispositivo
+    const retrieved = await getBookFile(bookId);
+    assert.ok(retrieved);
+    const view = new Uint8Array(retrieved);
+    assert.equal(view[0], 37);
+    assert.equal(view[1], 80);
+
+    // Eliminar al quitar de biblioteca
+    const deleted = await deleteBookFile(bookId);
+    assert.equal(deleted, true);
+
+    const afterDelete = await getBookFile(bookId);
+    assert.equal(afterDelete, null);
+  });
+});
+

@@ -5,6 +5,7 @@
  */
 
 import { getRecentBooks, removeRecentBook } from '../core/library-store.js';
+import { deleteBookFile } from '../core/book-cache.js';
 
 export class RecentShelf {
   constructor({ listEl, emptyEl, onSelectBook }) {
@@ -47,9 +48,10 @@ export class RecentShelf {
         this.onSelectBook(book);
       });
 
-      card.querySelector('.btn-del-book').addEventListener('click', (e) => {
+      card.querySelector('.btn-del-book').addEventListener('click', async (e) => {
         e.stopPropagation();
         removeRecentBook(book.id);
+        await deleteBookFile(book.id);
         this.render();
       });
 

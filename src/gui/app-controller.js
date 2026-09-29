@@ -376,5 +376,6 @@ export class AppController {
     document.documentElement.style.setProperty('--reader-canvas-bg', palette.canvasBg);
     document.documentElement.style.setProperty('--reader-viewport-bg', palette.readerBg);
     document.documentElement.style.setProperty('--reader-text-color', palette.textColor);
+    document.documentElement.style.setProperty('--reader-heading-color', palette.headingColor);
   }
 }

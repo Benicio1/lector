@@ -39,34 +39,69 @@ export class TextModeController {
     return this.fontFamily;
   }
 
-  setPageText(text) {
-    this.rawText = text || '';
-    if (!this.rawText.trim()) {
+  setPageText(input) {
+    if (!input || (Array.isArray(input) && input.length === 0) || (typeof input === 'string' && !input.trim())) {
       this.textEl.innerHTML = `
         <div class="empty-page-text">
           <p>⚠️ Esta página contiene principalmente imágenes o un escaneo gráfico.</p>
-          <p>Podés ver la página original tocando el botón <strong>"📄 Ver PDF Original"</strong>.</p>
+          <p>Podés ver la página original tocando el botón <strong>"📄 PDF"</strong>.</p>
         </div>
       `;
       return;
     }
 
-    // Formatear párrafos respetando saltos de línea
-    const paragraphs = this.rawText
-      .split(/\n\s*\n/)
-      .map(p => p.trim())
-      .filter(Boolean);
-
-    if (paragraphs.length <= 1) {
-      // Si no hay dobles saltos, dividir por saltos simples
-      const lines = this.rawText.split('\n').map(l => l.trim()).filter(Boolean);
-      this.textEl.innerHTML = lines.map(line => `<p class="reading-paragraph">${this.escape(line)}</p>`).join('');
+    if (Array.isArray(input)) {
+      this.rawText = input.map(item => item.text).join('\n\n');
+      this.textEl.innerHTML = input.map(item => {
+        const escaped = this.escape(item.text);
+        if (item.type === 'title') {
+          return `<h2 class="reading-chapter-title">${escaped}</h2>`;
+        }
+        if (item.type === 'subtitle') {
+          return `<h3 class="reading-section-title">${escaped}</h3>`;
+        }
+        return `<p class="reading-paragraph">${escaped}</p>`;
+      }).join('');
     } else {
-      this.textEl.innerHTML = paragraphs.map(p => `<p class="reading-paragraph">${this.escape(p)}</p>`).join('');
+      this.rawText = String(input);
+      const paragraphs = this.rawText
+        .split(/\n\s*\n/)
+        .map(p => p.trim())
+        .filter(Boolean);
+
+      const items = paragraphs.length > 1
+        ? paragraphs
+        : this.rawText.split('\n').map(l => l.trim()).filter(Boolean);
+
+      this.textEl.innerHTML = items.map(text => {
+        const escaped = this.escape(text);
+        if (this.isHeadingCandidate(text)) {
+          return `<h2 class="reading-chapter-title">${escaped}</h2>`;
+        }
+        return `<p class="reading-paragraph">${escaped}</p>`;
+      }).join('');
     }
 
     this.applyStyles();
     this.container.scrollTop = 0;
+  }
+
+  isHeadingCandidate(text) {
+    if (!text) return false;
+    const clean = text.trim();
+    if (clean.length > 80) return false;
+    if (/[.,;]$/.test(clean)) return false;
+
+    // Palabras clave de capítulos o divisiones
+    if (/^(cap[ií]tulo|parte|secci[oó]n|libro|acto|pr[oó]logo|ep[ií]logo|introducci[oó]n)\b/i.test(clean)) {
+      return true;
+    }
+
+    // Título corto que inicia con mayúscula o número, y sin diálogo
+    if (/^[\-—–"']/.test(clean)) return false;
+    const words = clean.split(/\s+/);
+    const isCapitalized = /^[A-ZÁÉÍÓÚÑ0-9¿¡]/.test(clean);
+    return isCapitalized && words.length <= 8;
   }
 
   applyStyles() {

@@ -252,6 +252,27 @@
   word-break: break-word;
 }
 
+.reading-chapter-title {
+  font-size: 1.42em;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+  margin: 1.2em auto 0.8em;
+  padding-bottom: 0.4em;
+  color: var(--reader-heading-color, #fbbf24);
+  border-bottom: 2px solid rgba(245, 158, 11, 0.4);
+  max-width: 90%;
+  letter-spacing: 0.4px;
+}
+
+.reading-section-title {
+  font-size: 1.18em;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 1em 0 0.5em;
+  color: var(--reader-heading-color, #f59e0b);
+}
+
 .empty-page-text {
   text-align: center;
   padding: 40px 10px;

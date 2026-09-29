@@ -97,9 +97,11 @@ describe('Motor de Filtros de Luz y Confort Visual (filter-engine)', () => {
     const oledPalette = getThemePalette(PRESET_MODES.OLED);
     assert.equal(oledPalette.canvasBg, '#000000');
     assert.equal(oledPalette.readerBg, '#000000');
+    assert.equal(oledPalette.headingColor, '#f59e0b');
 
     const sepiaPalette = getThemePalette(PRESET_MODES.SEPIA);
     assert.equal(sepiaPalette.canvasBg, '#f5ecd7');
+    assert.equal(sepiaPalette.headingColor, '#78350f');
   });
 });
 
@@ -206,6 +208,39 @@ describe('Modo Letra Grande y Tipografías (TextModeController)', () => {
     controller.setPageText('Primer párrafo largo.\n\nSegundo párrafo claro.');
     assert.ok(mockTextEl.innerHTML.includes('<p class="reading-paragraph">Primer párrafo largo.</p>'));
     assert.ok(mockTextEl.innerHTML.includes('<p class="reading-paragraph">Segundo párrafo claro.</p>'));
+  });
+
+  it('debe renderizar bloques estructurados distinguiendo títulos de capítulos y subtítulos', () => {
+    const mockContainer = { scrollTop: 0 };
+    const mockTextEl = { style: {}, innerHTML: '' };
+    const controller = new TextModeController({
+      container: mockContainer,
+      textEl: mockTextEl
+    });
+
+    const blocks = [
+      { type: 'title', text: 'La infancia minusválida' },
+      { type: 'subtitle', text: 'Sección Primera' },
+      { type: 'paragraph', text: 'El sol de la mañana entraba tímidamente por la ventana.' }
+    ];
+
+    controller.setPageText(blocks);
+    assert.ok(mockTextEl.innerHTML.includes('<h2 class="reading-chapter-title">La infancia minusválida</h2>'));
+    assert.ok(mockTextEl.innerHTML.includes('<h3 class="reading-section-title">Sección Primera</h3>'));
+    assert.ok(mockTextEl.innerHTML.includes('<p class="reading-paragraph">El sol de la mañana entraba tímidamente por la ventana.</p>'));
+  });
+
+  it('debe detectar títulos de capítulos en texto plano sin la palabra capítulo', () => {
+    const mockContainer = { scrollTop: 0 };
+    const mockTextEl = { style: {}, innerHTML: '' };
+    const controller = new TextModeController({
+      container: mockContainer,
+      textEl: mockTextEl
+    });
+
+    controller.setPageText('La infancia minusválida\n\nEl sol de la mañana entraba por la ventana.');
+    assert.ok(mockTextEl.innerHTML.includes('<h2 class="reading-chapter-title">La infancia minusválida</h2>'));
+    assert.ok(mockTextEl.innerHTML.includes('<p class="reading-paragraph">El sol de la mañana entraba por la ventana.</p>'));
   });
 });
 

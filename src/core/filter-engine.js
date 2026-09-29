@@ -27,7 +27,8 @@ export const PRESET_CONFIGS = {
     grayscale: 0,
     canvasBg: '#ffffff',
     readerBg: '#f1f5f9',
-    textColor: '#1e293b'
+    textColor: '#1e293b',
+    headingColor: '#b45309'
   },
   [PRESET_MODES.WARM]: {
     id: PRESET_MODES.WARM,
@@ -42,7 +43,8 @@ export const PRESET_CONFIGS = {
     grayscale: 0,
     canvasBg: '#fef9ee',
     readerBg: '#1e1a16',
-    textColor: '#292524'
+    textColor: '#292524',
+    headingColor: '#92400e'
   },
   [PRESET_MODES.SEPIA]: {
     id: PRESET_MODES.SEPIA,
@@ -57,7 +59,8 @@ export const PRESET_CONFIGS = {
     grayscale: 0,
     canvasBg: '#f5ecd7',
     readerBg: '#211d17',
-    textColor: '#2c2217'
+    textColor: '#2c2217',
+    headingColor: '#78350f'
   },
   [PRESET_MODES.NIGHT]: {
     id: PRESET_MODES.NIGHT,
@@ -72,7 +75,8 @@ export const PRESET_CONFIGS = {
     grayscale: 0,
     canvasBg: '#1a1a1e',
     readerBg: '#121214',
-    textColor: '#e4e4e7'
+    textColor: '#e4e4e7',
+    headingColor: '#fbbf24'
   },
   [PRESET_MODES.OLED]: {
     id: PRESET_MODES.OLED,
@@ -87,7 +91,8 @@ export const PRESET_CONFIGS = {
     grayscale: 0,
     canvasBg: '#000000',
     readerBg: '#000000',
-    textColor: '#d4d4d8'
+    textColor: '#d4d4d8',
+    headingColor: '#f59e0b'
   },
   [PRESET_MODES.EINK]: {
     id: PRESET_MODES.EINK,
@@ -102,7 +107,8 @@ export const PRESET_CONFIGS = {
     grayscale: 100,
     canvasBg: '#ebebe6',
     readerBg: '#18181b',
-    textColor: '#18181b'
+    textColor: '#18181b',
+    headingColor: '#000000'
   }
 };
 
@@ -193,6 +199,7 @@ export function getThemePalette(preset = PRESET_MODES.NORMAL) {
   return {
     canvasBg: config.canvasBg,
     readerBg: config.readerBg,
-    textColor: config.textColor
+    textColor: config.textColor,
+    headingColor: config.headingColor || '#fbbf24'
   };
 }

@@ -187,27 +187,73 @@ export class PdfViewer {
   }
 
   /**
-   * Extrae el contenido de texto de la página para el Modo Letra Grande Adaptable.
+   * Extrae el contenido de texto de la página analizando tamaño de fuentes
+   * para detectar títulos de capítulos y subtítulos frente al texto normal.
    */
   async getPageText(pageNum = this.currentPageNum) {
-    if (!this.pdfDoc) return '';
+    if (!this.pdfDoc) return [];
     try {
       const page = await this.pdfDoc.getPage(pageNum);
       const textContent = await page.getTextContent();
-      const strings = [];
-      let lastY = null;
+      if (!textContent.items || !textContent.items.length) return [];
+
+      const lines = [];
+      let currentLine = null;
+
       for (const item of textContent.items) {
-        if (!item.str) continue;
-        if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
-          strings.push('\n');
+        if (!item.str || !item.str.trim()) continue;
+        const y = item.transform[5];
+        const fontSize = Math.round(Math.hypot(item.transform[0], item.transform[1]) || item.height || 12);
+
+        if (!currentLine || Math.abs(currentLine.y - y) > 5) {
+          if (currentLine) lines.push(currentLine);
+          currentLine = { y, fontSize, text: item.str.trim() };
+        } else {
+          currentLine.text += ' ' + item.str.trim();
+          currentLine.fontSize = Math.max(currentLine.fontSize, fontSize);
         }
-        strings.push(item.str + ' ');
-        lastY = item.transform[5];
       }
-      return strings.join('').trim();
+      if (currentLine) lines.push(currentLine);
+      if (!lines.length) return [];
+
+      const sizeHistogram = {};
+      for (const line of lines) {
+        const sz = line.fontSize;
+        sizeHistogram[sz] = (sizeHistogram[sz] || 0) + line.text.length;
+      }
+      let bodyFontSize = 12;
+      let maxCount = 0;
+      for (const [sz, count] of Object.entries(sizeHistogram)) {
+        if (count > maxCount) {
+          maxCount = count;
+          bodyFontSize = Number(sz);
+        }
+      }
+
+      const blocks = [];
+      for (const line of lines) {
+        const text = line.text.trim();
+        if (!text) continue;
+
+        const isLarger = line.fontSize >= bodyFontSize * 1.15;
+        const isMuchLarger = line.fontSize >= bodyFontSize * 1.35;
+        const isShort = text.length <= 75;
+        const noEndingDot = !/[.,;:]$/.test(text);
+        const isChapterPattern = /^(cap[ií]tulo|parte|secci[oó]n|libro|acto|pr[oó]logo|ep[ií]logo|introducci[oó]n)\b/i.test(text);
+
+        if ((isMuchLarger && isShort) || (isChapterPattern && isShort)) {
+          blocks.push({ type: 'title', text });
+        } else if (isLarger && isShort && noEndingDot) {
+          blocks.push({ type: 'subtitle', text });
+        } else {
+          blocks.push({ type: 'paragraph', text });
+        }
+      }
+
+      return blocks;
     } catch (err) {
-      console.warn('[pdf-viewer] Error al extraer texto de página:', err);
-      return '';
+      console.warn('[pdf-viewer] Error al extraer texto estructurado:', err);
+      return [];
     }
   }
 

@@ -1,0 +1,181 @@
+/**
+ * filters.css — Estilos del Panel de Confort Visual y Filtros de Luz
+ * Reglas de diseño para presets, sliders de ajuste fino y overlay ambarino.
+ */
+
+:root {
+  --reader-canvas-bg: #fef9ee;
+  --reader-viewport-bg: #1e1a16;
+  --color-warm-amber: #f59e0b;
+  --color-warm-amber-glow: rgba(245, 158, 11, 0.25);
+}
+
+/* Capa de protección ocular (Filtro Anti-Luz Azul) */
+.warmth-filter-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+/* Modal Bottom-Sheet de Confort Visual */
+.filters-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transition: opacity 0.25s ease;
+}
+
+.filters-modal.hidden {
+  display: none !important;
+}
+
+.filters-sheet {
+  width: 100%;
+  max-width: 520px;
+  background-color: #18181b;
+  border-top: 1px solid #27272a;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 18px 20px 24px;
+  box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background-color: #3f3f46;
+  border-radius: 2px;
+  margin: 0 auto 12px;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.sheet-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #f4f4f5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon-close {
+  background: none;
+  border: none;
+  color: #a1a1aa;
+  font-size: 1.25rem;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+/* Grid de Presets */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.chip-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 6px;
+  background-color: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 12px;
+  color: #d4d4d8;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 56px;
+}
+
+.chip-btn .chip-icon {
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+}
+
+.chip-btn.active {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-color: #f59e0b;
+  color: #fbbf24;
+  font-weight: 600;
+  box-shadow: 0 0 12px var(--color-warm-amber-glow);
+}
+
+/* Sliders de Ajuste Fino */
+.slider-group {
+  margin-bottom: 14px;
+}
+
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  margin-bottom: 6px;
+}
+
+.slider-label span:last-child {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.filter-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #3f3f46;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.filter-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f59e0b;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.btn-secondary {
+  background: none;
+  border: 1px solid #3f3f46;
+  color: #a1a1aa;
+  font-size: 0.85rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}

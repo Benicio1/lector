@@ -1,0 +1,420 @@
+/**
+ * main.css — Estilos Principales de la Aplicación Móvil Lector Confort PDF
+ * Diseño adaptado a smartphones, táctil, oscuro y descanso visual.
+ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #0f0e0d;
+  color: #e4e4e7;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 📲 Banner de Instalación PWA Móvil */
+.install-banner {
+  background: linear-gradient(90deg, #d97706, #b45309);
+  color: #ffffff;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+  font-size: 0.9rem;
+}
+
+.install-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-install {
+  background-color: #ffffff;
+  color: #78350f;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   VISTA 1: BIBLIOTECA / INICIO
+   ========================================================================== */
+.view-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#view-library {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 18px 40px;
+  width: 100%;
+}
+
+.app-brand {
+  text-align: center;
+  margin-bottom: 28px;
+  margin-top: 10px;
+}
+
+.brand-icon {
+  font-size: 2.8rem;
+  margin-bottom: 8px;
+  display: inline-block;
+  filter: drop-shadow(0 2px 8px rgba(245, 158, 11, 0.35));
+}
+
+.app-brand h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fef3c7;
+  letter-spacing: -0.5px;
+}
+
+.app-brand p {
+  font-size: 0.9rem;
+  color: #a1a1aa;
+  margin-top: 4px;
+}
+
+/* Botón Gigante de Selección de Archivo Móvil */
+.picker-card {
+  background: linear-gradient(145deg, #1c1917, #171513);
+  border: 2px dashed #44403c;
+  border-radius: 20px;
+  padding: 28px 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 28px;
+}
+
+.picker-card.drag-over {
+  border-color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.08);
+}
+
+.picker-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.btn-open-phone {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #1c1917;
+  border: none;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 14px 24px;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.btn-open-phone:active {
+  transform: scale(0.98);
+}
+
+.picker-hint {
+  font-size: 0.8rem;
+  color: #71717a;
+}
+
+/* Sección de Libros Recientes */
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f4f4f5;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recent-books-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.book-card {
+  background-color: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.book-card-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.book-icon {
+  font-size: 1.6rem;
+}
+
+.book-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.book-title {
+  font-size: 0.95rem;
+  color: #f4f4f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.book-meta {
+  font-size: 0.78rem;
+  color: #a1a1aa;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 4px;
+  background-color: #27272a;
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #f59e0b;
+}
+
+.book-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-resume-book {
+  background-color: #27272a;
+  color: #fbbf24;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-del-book {
+  background: none;
+  border: none;
+  color: #71717a;
+  font-size: 1rem;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px 10px;
+  color: #71717a;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   VISTA 2: LECTOR INMERSIVO
+   ========================================================================== */
+#view-reader {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--reader-viewport-bg);
+}
+
+/* Barra Superior */
+.reader-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  background-color: rgba(24, 24, 27, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 30;
+  border-bottom: 1px solid rgba(63, 63, 70, 0.4);
+  transition: transform 0.25s ease;
+}
+
+.reader-top-bar.bars-hidden {
+  transform: translateY(-100%);
+}
+
+.doc-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  margin: 0 10px;
+}
+
+.doc-title {
+  font-size: 0.9rem;
+  color: #f4f4f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reader-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-nav-icon {
+  background: none;
+  border: none;
+  color: #e4e4e7;
+  font-size: 1.15rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn-nav-icon:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-filter-trigger {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #ffffff;
+  border: none;
+  border-radius: 18px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+}
+
+/* Área de Visualización del PDF */
+.pdf-viewport-area {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 10px 65px;
+  touch-action: pan-x pan-y;
+}
+
+.pdf-page-canvas {
+  display: block;
+  margin: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  background-color: var(--reader-canvas-bg);
+  transition: filter 0.15s ease;
+  max-width: 100%;
+}
+
+/* Barra Inferior */
+.reader-bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background-color: rgba(24, 24, 27, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  z-index: 30;
+  border-top: 1px solid rgba(63, 63, 70, 0.4);
+  transition: transform 0.25s ease;
+}
+
+.reader-bottom-nav.bars-hidden {
+  transform: translateY(100%);
+}
+
+.page-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 380px;
+  margin: 0 10px;
+}
+
+.page-counter-badge {
+  font-size: 0.85rem;
+  color: #fbbf24;
+  font-weight: 600;
+  min-width: 60px;
+  text-align: center;
+}
+
+.slider-page-nav {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: #3f3f46;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.slider-page-nav::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f59e0b;
+  cursor: pointer;
+}

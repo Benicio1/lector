@@ -1,0 +1,23 @@
+{
+  "name": "lector-pdf-pwa",
+  "version": "1.0.0",
+  "description": "Lector de archivos PDF para teléfonos móviles con filtros de luz anti-fatiga visual (PWA Offline)",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/lector.test.mjs"
+  },
+  "keywords": [
+    "pdf",
+    "reader",
+    "mobile",
+    "pwa",
+    "eye-comfort",
+    "blue-light-filter",
+    "sepia",
+    "night-mode",
+    "oled"
+  ],
+  "author": "MÖLDEAstudio",
+  "license": "MIT"
+}

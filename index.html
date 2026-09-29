@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#0f0e0d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Lector PDF">
+  <title>Lector Confort PDF — Filtros de Luz para Celular</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/filters.css">
+</head>
+<body>
+
+  <!-- 📲 Banner de Instalación PWA Móvil -->
+  <div id="pwa-install-banner" class="install-banner hidden">
+    <div class="install-banner-content">
+      <span>📲</span>
+      <span>Instalá la app en tu teléfono para abrir PDFs sin conexión</span>
+    </div>
+    <button id="btn-install-app" class="btn-install">Instalar</button>
+  </div>
+
+  <main class="view-container">
+    <!-- ====================================================================
+         VISTA 1: BIBLIOTECA / SELECCIÓN DE PDF
+         ==================================================================== -->
+    <section id="view-library">
+      <div style="display: flex; justify-content: flex-start; margin-bottom: 8px;">
+        <a href="../../" style="display: inline-flex; align-items: center; gap: 6px; color: #a1a1aa; text-decoration: none; font-size: 0.85rem; padding: 6px 12px; background: #1c1917; border-radius: 8px; border: 1px solid #27272a;">
+          <span>◀</span> Volver al Hub
+        </a>
+      </div>
+      <header class="app-brand">
+        <div class="brand-icon">📖</div>
+        <h1>Lector Confort PDF</h1>
+        <p>Lectura relajante con filtros de luz anti-fatiga visual</p>
+      </header>
+
+      <!-- Selector de Archivo Local del Teléfono -->
+      <input type="file" id="file-input" accept="application/pdf" class="hidden">
+      
+      <div id="drop-zone" class="picker-card">
+        <div class="picker-icon">📂</div>
+        <button id="btn-pick-file" type="button" class="btn-open-phone">
+          <span>Elegir PDF del Teléfono</span>
+        </button>
+        <p class="picker-hint">Toca para abrir cualquier archivo PDF de tus descargas o memoria</p>
+      </div>
+
+      <!-- Historial de Lectura Reciente -->
+      <section class="recents-section">
+        <h2 class="section-title">
+          <span>📚</span> Continuar Lectura
+        </h2>
+
+        <div id="recent-books-list" class="recent-books-container">
+          <!-- Tarjetas de libros recientes renderizadas dinámicamente -->
+        </div>
+
+        <div id="empty-recents" class="empty-state">
+          No hay lecturas recientes. Abrí un PDF para comenzar.
+        </div>
+      </section>
+    </section>
+
+    <!-- ====================================================================
+         VISTA 2: LECTOR INMERSIVO
+         ==================================================================== -->
+    <section id="view-reader" class="hidden">
+      <!-- Barra Superior -->
+      <header id="reader-header" class="reader-top-bar">
+        <button id="btn-back-home" class="btn-nav-icon" title="Volver a la biblioteca" aria-label="Volver">
+          ◀
+        </button>
+
+        <div class="doc-info">
+          <span id="doc-title" class="doc-title">Documento</span>
+        </div>
+
+        <div class="reader-actions">
+          <button id="btn-fit-width" class="btn-nav-icon" title="Ajustar ancho" aria-label="Ajustar ancho">
+            ↔️
+          </button>
+          <button id="btn-open-filters" class="btn-filter-trigger" title="Filtros de luz y confort visual">
+            <span>✨</span> Filtros
+          </button>
+        </div>
+      </header>
+
+      <!-- Viewport del PDF y Capa Óptica de Luz Cálida -->
+      <div id="pdf-viewport" class="pdf-viewport-area">
+        <div id="warmth-overlay" class="warmth-filter-layer"></div>
+      </div>
+
+      <!-- Barra Inferior de Navegación -->
+      <footer id="reader-bottom-bar" class="reader-bottom-nav">
+        <button id="btn-prev-page" class="btn-nav-icon" title="Página anterior" aria-label="Anterior">
+          ◀
+        </button>
+
+        <div class="page-stepper">
+          <input type="range" id="page-slider" class="slider-page-nav" min="1" max="1" value="1">
+          <span id="page-info" class="page-counter-badge">1 / 1</span>
+        </div>
+
+        <div class="zoom-controls">
+          <button id="btn-zoom-out" class="btn-nav-icon" title="Reducir zoom" aria-label="Menos zoom">🔍−</button>
+          <button id="btn-zoom-in" class="btn-nav-icon" title="Aumentar zoom" aria-label="Más zoom">🔍+</button>
+        </div>
+
+        <button id="btn-next-page" class="btn-nav-icon" title="Página siguiente" aria-label="Siguiente">
+          ▶
+        </button>
+      </footer>
+    </section>
+  </main>
+
+  <!-- ======================================================================
+       MODAL BOTTOM SHEET: FILTROS DE LUZ Y CONFORT VISUAL
+       ====================================================================== -->
+  <div id="modal-filters" class="filters-modal hidden">
+    <div class="filters-sheet">
+      <div class="sheet-handle"></div>
+      
+      <div class="sheet-header">
+        <h3><span>🛡️</span> Confort Visual y Filtros</h3>
+        <button id="btn-close-filters" class="btn-icon-close" aria-label="Cerrar filtros">✕</button>
+      </div>
+
+      <!-- Chips de Modos Predefinidos -->
+      <div id="preset-chips" class="preset-grid">
+        <!-- Renderizado dinámico de Normal, Luz Cálida, Sepia, Noche, OLED, e-Ink -->
+      </div>
+
+      <!-- Sliders de Ajuste Fino -->
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>🔆 Brillo de Lectura</span>
+          <span id="val-brightness">95%</span>
+        </div>
+        <input type="range" id="slider-brightness" class="filter-slider" min="25" max="130" value="95">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>🌅 Calidez (Filtro Luz Azul)</span>
+          <span id="val-warmth">30%</span>
+        </div>
+        <input type="range" id="slider-warmth" class="filter-slider" min="0" max="100" value="30">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>🎚️ Contraste de Texto</span>
+          <span id="val-contrast">100%</span>
+        </div>
+        <input type="range" id="slider-contrast" class="filter-slider" min="70" max="140" value="100">
+      </div>
+
+      <div class="filter-actions">
+        <button id="btn-reset-filters" class="btn-secondary">Restablecer valores</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Librería PDF.js Local y Autónoma -->
+  <script src="vendor/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
+    }
+  </script>
+
+  <!-- Controladores Principales Modularizados -->
+  <script type="module">
+    import { AppController } from './src/gui/app-controller.js';
+    import { PwaManager } from './src/gui/pwa-manager.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Inicializar Controlador de App
+      window.app = new AppController();
+
+      // Inicializar Gestor de PWA
+      window.pwa = new PwaManager({
+        installBannerEl: document.getElementById('pwa-install-banner'),
+        installBtnEl: document.getElementById('btn-install-app'),
+        onStatusChange: (status) => {
+          if (status.offlineReady) {
+            console.log('[PWA] Listo para operar 100% offline.');
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

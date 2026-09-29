@@ -106,38 +106,53 @@
         </div>
       </header>
 
-      <!-- Barra de Ajuste de Letra y Tipografía (Fácil y Directa) -->
+      <!-- Barra de Ajuste de Letra y Tipografía / Zoom -->
       <nav id="font-controls-bar" class="font-controls-bar">
-        <div class="font-stepper">
+        <!-- Controles para MODO TEXTO (Letra Grande) -->
+        <div id="controls-text-mode" class="font-stepper">
           <span class="stepper-label">Letra:</span>
           <button id="btn-font-decrease" class="btn-font-step" title="Reducir tamaño de letra">A−</button>
-          <span id="font-size-label" class="font-size-badge">Letra: 24px</span>
+          <span id="font-size-label" class="font-size-badge">24px</span>
           <button id="btn-font-increase" class="btn-font-step" title="Aumentar tamaño de letra">A+</button>
+          
+          <div class="font-family-selector">
+            <select id="select-font-family" class="font-select" aria-label="Tipo de letra">
+              <option value="serif">📖 Libro Clásico (Serif)</option>
+              <option value="sans-serif">🔤 Moderna y Limpia</option>
+              <option value="readable">👓 Máxima Legibilidad</option>
+            </select>
+          </div>
         </div>
 
-        <div class="font-family-selector">
-          <select id="select-font-family" class="font-select" aria-label="Tipo de letra">
-            <option value="serif">📖 Libro Clásico (Serif)</option>
-            <option value="sans-serif">🔤 Moderna y Limpia</option>
-            <option value="readable">👓 Máxima Legibilidad</option>
-          </select>
+        <!-- Controles para MODO PDF ORIGINAL (Canvas) -->
+        <div id="controls-pdf-mode" class="font-stepper hidden">
+          <span class="stepper-label">Zoom PDF:</span>
+          <button id="btn-zoom-decrease" class="btn-font-step" title="Alejar zoom">🔍−</button>
+          <span id="zoom-size-label" class="font-size-badge">100%</span>
+          <button id="btn-zoom-increase" class="btn-font-step" title="Acercar zoom">🔍+</button>
+          <button id="btn-fit-width" class="btn-fit-action" title="Ajustar al ancho de pantalla">↔️ Ajustar</button>
         </div>
       </nav>
 
       <!-- Contenedor 1: Modo Letra Grande Adaptable (Reflow) -->
-      <div id="text-view-container" class="text-viewport-area hidden">
+      <div id="text-view-container" class="text-viewport-area">
         <article id="text-reading-content" class="text-reading-content">
           <!-- Texto extraído del PDF con tamaño y tipografía configurable -->
         </article>
       </div>
 
       <!-- Contenedor 2: Modo PDF Original (Canvas) -->
-      <div id="pdf-viewport" class="pdf-viewport-area">
+      <div id="pdf-viewport" class="pdf-viewport-area hidden">
         <!-- Canvas generado por PDF.js -->
       </div>
 
       <!-- Capa Óptica de Luz Cálida (Anti-Luz Azul) -->
       <div id="warmth-overlay" class="warmth-filter-layer"></div>
+
+      <!-- Botón flotante para restaurar controles en pantalla completa -->
+      <button id="floating-restore-pill" class="floating-restore-pill hidden">
+        <span>👁️</span> Mostrar Controles
+      </button>
 
       <!-- Barra Inferior de Navegación Clara -->
       <footer id="reader-bottom-bar" class="reader-bottom-nav">

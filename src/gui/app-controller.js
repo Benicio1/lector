@@ -1,6 +1,6 @@
 /**
  * app-controller.js — Controlador Principal de la Interfaz del Lector Móvil
- * Integra PDF, modo letra grande para adultos, filtros y biblioteca reciente.
+ * Integra modo letra grande para adultos, inmersión táctil, filtros y visor PDF.
  * Cumple con el límite de 400 líneas de AGENTS.md.
  */
 
@@ -33,8 +33,9 @@ export class AppController {
     this.filterModal = null;
     this.settings = loadSettings();
     this.currentFile = null;
+    this.barsHidden = false;
     this.activePreset = this.settings.preset || PRESET_MODES.WARM;
-    this.viewMode = this.settings.viewMode || 'page';
+    this.viewMode = this.settings.viewMode || 'text'; // Default a texto grande
 
     this.cacheDom();
     this.initPdfViewer();
@@ -61,6 +62,11 @@ export class AppController {
     this.textReadingContent = document.getElementById('text-reading-content');
     this.warmthOverlay = document.getElementById('warmth-overlay');
 
+    this.headerBar = document.getElementById('reader-header');
+    this.fontControlsBar = document.getElementById('font-controls-bar');
+    this.bottomBar = document.getElementById('reader-bottom-bar');
+    this.floatingRestorePill = document.getElementById('floating-restore-pill');
+
     this.docTitleEl = document.getElementById('doc-title');
     this.pageInfoEl = document.getElementById('page-info');
     this.btnBackHome = document.getElementById('btn-back-home');
@@ -68,10 +74,18 @@ export class AppController {
     this.btnNext = document.getElementById('btn-next-page');
 
     this.btnToggleViewMode = document.getElementById('btn-toggle-view-mode');
+    this.controlsTextMode = document.getElementById('controls-text-mode');
+    this.controlsPdfMode = document.getElementById('controls-pdf-mode');
+
     this.btnFontDecrease = document.getElementById('btn-font-decrease');
     this.btnFontIncrease = document.getElementById('btn-font-increase');
     this.fontSizeLabel = document.getElementById('font-size-label');
     this.selectFontFamily = document.getElementById('select-font-family');
+
+    this.btnZoomDecrease = document.getElementById('btn-zoom-decrease');
+    this.btnZoomIncrease = document.getElementById('btn-zoom-increase');
+    this.zoomSizeLabel = document.getElementById('zoom-size-label');
+    this.btnFitWidth = document.getElementById('btn-fit-width');
     this.btnOpenFilters = document.getElementById('btn-open-filters');
   }
 
@@ -166,6 +180,7 @@ export class AppController {
     this.btnPrev.addEventListener('click', () => this.navigatePage(-1));
     this.btnNext.addEventListener('click', () => this.navigatePage(1));
 
+    // Conmutador entre Modo Letra Grande y Modo PDF Original
     this.btnToggleViewMode.addEventListener('click', () => {
       this.viewMode = this.viewMode === 'page' ? 'text' : 'page';
       this.settings = saveSettings({ viewMode: this.viewMode });
@@ -173,22 +188,15 @@ export class AppController {
       if (this.viewMode === 'text') this.syncCurrentPageText();
     });
 
+    // Controles de tamaño de letra (Modo Texto)
     this.btnFontDecrease.addEventListener('click', () => {
-      if (this.viewMode === 'text') {
-        this.textController.decreaseFontSize(2);
-      } else {
-        this.viewer.zoom(0.85);
-      }
-      this.updateFontSizeLabel();
+      this.textController.decreaseFontSize(2);
+      this.fontSizeLabel.textContent = `${this.textController.fontSize}px`;
     });
 
     this.btnFontIncrease.addEventListener('click', () => {
-      if (this.viewMode === 'text') {
-        this.textController.increaseFontSize(2);
-      } else {
-        this.viewer.zoom(1.2);
-      }
-      this.updateFontSizeLabel();
+      this.textController.increaseFontSize(2);
+      this.fontSizeLabel.textContent = `${this.textController.fontSize}px`;
     });
 
     if (this.selectFontFamily) {
@@ -197,13 +205,58 @@ export class AppController {
       });
     }
 
+    // Controles de zoom (Modo PDF)
+    if (this.btnZoomDecrease) {
+      this.btnZoomDecrease.addEventListener('click', () => {
+        this.viewer.zoom(0.85);
+        this.updateZoomLabel();
+      });
+    }
+
+    if (this.btnZoomIncrease) {
+      this.btnZoomIncrease.addEventListener('click', () => {
+        this.viewer.zoom(1.2);
+        this.updateZoomLabel();
+      });
+    }
+
+    if (this.btnFitWidth) {
+      this.btnFitWidth.addEventListener('click', () => {
+        this.viewer.fitToWidth();
+        this.updateZoomLabel();
+      });
+    }
+
     this.btnOpenFilters.addEventListener('click', () => this.filterModal.open(this.settings));
+
+    // Inmersión: tocar pantalla oculta/muestra las barras
+    const toggleImmersionHandler = (e) => {
+      // Ignorar clics dentro de botones o enlaces
+      if (e.target.closest('button, select, input, a')) return;
+      this.toggleImmersion();
+    };
+
+    this.textContainer.addEventListener('click', toggleImmersionHandler);
+    this.pdfContainer.addEventListener('click', toggleImmersionHandler);
+    if (this.floatingRestorePill) {
+      this.floatingRestorePill.addEventListener('click', () => this.toggleImmersion(false));
+    }
 
     window.addEventListener('keydown', (e) => {
       if (this.viewReader.classList.contains('hidden')) return;
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') this.navigatePage(1);
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') this.navigatePage(-1);
     });
+  }
+
+  toggleImmersion(forceState) {
+    this.barsHidden = forceState !== undefined ? forceState : !this.barsHidden;
+    this.headerBar.classList.toggle('bars-hidden', this.barsHidden);
+    this.fontControlsBar.classList.toggle('bars-hidden', this.barsHidden);
+    this.bottomBar.classList.toggle('bars-hidden', this.barsHidden);
+    if (this.floatingRestorePill) {
+      this.floatingRestorePill.classList.toggle('hidden', !this.barsHidden);
+    }
   }
 
   async navigatePage(delta) {
@@ -222,23 +275,25 @@ export class AppController {
     this.textContainer.classList.toggle('hidden', !isText);
     this.pdfContainer.classList.toggle('hidden', isText);
 
+    if (this.controlsTextMode && this.controlsPdfMode) {
+      this.controlsTextMode.classList.toggle('hidden', !isText);
+      this.controlsPdfMode.classList.toggle('hidden', isText);
+    }
+
     if (isText) {
-      this.btnToggleViewMode.innerHTML = '<span>📄</span> Ver PDF Original';
+      this.btnToggleViewMode.innerHTML = '<span>📄</span> Ver PDF';
       this.btnToggleViewMode.classList.add('active-text-mode');
+      this.fontSizeLabel.textContent = `${this.textController.fontSize}px`;
     } else {
       this.btnToggleViewMode.innerHTML = '<span>👓</span> Letra Grande';
       this.btnToggleViewMode.classList.remove('active-text-mode');
+      this.updateZoomLabel();
     }
-    this.updateFontSizeLabel();
   }
 
-  updateFontSizeLabel() {
-    if (this.viewMode === 'text') {
-      this.fontSizeLabel.textContent = `Letra: ${this.textController.fontSize}px`;
-    } else {
-      const pct = Math.round((this.viewer?.currentScale || 1.0) * 100);
-      this.fontSizeLabel.textContent = `Zoom: ${pct}%`;
-    }
+  updateZoomLabel() {
+    const pct = Math.round((this.viewer?.currentScale || 1.0) * 100);
+    if (this.zoomSizeLabel) this.zoomSizeLabel.textContent = `${pct}%`;
   }
 
   async handleFileSelection(file) {
@@ -254,6 +309,7 @@ export class AppController {
 
     this.viewLibrary.classList.add('hidden');
     this.viewReader.classList.remove('hidden');
+    this.toggleImmersion(false); // Asegurar barras visibles al abrir
 
     try {
       const arrayBuffer = await file.arrayBuffer();
@@ -338,7 +394,6 @@ export class AppController {
     this.pageInfoEl.textContent = `Página ${currentPage} de ${totalPages}`;
     this.btnPrev.disabled = currentPage <= 1;
     this.btnNext.disabled = currentPage >= totalPages;
-    this.updateFontSizeLabel();
   }
 
   applyVisualFilters() {

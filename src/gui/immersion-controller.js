@@ -1,5 +1,5 @@
 /**
- * immersion-controller.js — Gestor de Inmersión, Gestos Táctiles y Rotación
+ * immersion-controller.js — Gestor de Inmersión y Gestos Táctiles
  * Discrimina entre deslizamiento y tap para auto-ocultar barras sin interrumpir lectura.
  * Cumple con el límite de 400 líneas de AGENTS.md.
  */
@@ -10,8 +10,6 @@ export class ImmersionController {
     headerBar,
     fontControlsBar,
     bottomBar,
-    btnToggleRotation,
-    btnToggleImmersion,
     textContainer,
     pdfContainer
   }) {
@@ -19,13 +17,10 @@ export class ImmersionController {
     this.headerBar = headerBar;
     this.fontControlsBar = fontControlsBar;
     this.bottomBar = bottomBar;
-    this.btnToggleRotation = btnToggleRotation;
-    this.btnToggleImmersion = btnToggleImmersion;
     this.textContainer = textContainer;
     this.pdfContainer = pdfContainer;
 
     this.barsHidden = false;
-    this.isForcedLandscape = false;
     this.autoHideTimeout = null;
 
     this.init();
@@ -37,13 +32,6 @@ export class ImmersionController {
   }
 
   bindEvents() {
-    if (this.btnToggleRotation) {
-      this.btnToggleRotation.addEventListener('click', () => this.toggleRotation());
-    }
-    if (this.btnToggleImmersion) {
-      this.btnToggleImmersion.addEventListener('click', () => this.toggleImmersion());
-    }
-
     const keepAlive = () => {
       if (!this.barsHidden) this.scheduleAutoHide(4500);
     };
@@ -127,29 +115,7 @@ export class ImmersionController {
     }
   }
 
-  toggleRotation() {
-    this.isForcedLandscape = !this.isForcedLandscape;
-    this.viewReader.classList.toggle('forced-landscape', this.isForcedLandscape);
-    if (this.btnToggleRotation) {
-      this.btnToggleRotation.classList.toggle('active-rotation', this.isForcedLandscape);
-      this.btnToggleRotation.innerHTML = this.isForcedLandscape ? '<span>📱</span> Vertical' : '<span>🔄</span> Girar';
-    }
-
-    try {
-      if (screen.orientation && typeof screen.orientation.lock === 'function') {
-        if (this.isForcedLandscape) {
-          screen.orientation.lock('landscape').catch(() => {});
-        } else if (typeof screen.orientation.unlock === 'function') {
-          screen.orientation.unlock();
-        }
-      }
-    } catch (_) {}
-  }
-
   resetOnExit() {
-    if (this.isForcedLandscape) {
-      this.toggleRotation();
-    }
     this.toggleImmersion(false);
   }
 }

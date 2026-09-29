@@ -44,23 +44,13 @@
   height: 52px;
   background: rgba(24, 24, 27, 0.92);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
-  padding: 0 8px;
-  gap: 6px;
+  justify-content: space-between;
+  padding: 0 10px;
   z-index: 40;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
-  scrollbar-width: none;
-}
-
-.reader-top-bar::-webkit-scrollbar {
-  display: none;
 }
 
 .reader-top-bar.bars-hidden {
@@ -73,46 +63,37 @@
   background: rgba(39, 39, 42, 0.85);
   border: 1px solid rgba(63, 63, 70, 0.7);
   color: #e4e4e7;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  padding: 6px 9px;
-  border-radius: 8px;
+  padding: 7px 12px;
+  border-radius: 9px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 3px;
-  flex-shrink: 0;
-  touch-action: pan-x;
+  gap: 4px;
 }
 
 .reader-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  gap: 8px;
 }
 
-.reader-actions button {
-  flex-shrink: 0;
-  touch-action: pan-x;
-}
-
-.btn-rotate-action, .btn-immersion-action, .btn-toggle-mode {
+.btn-toggle-mode {
   background: rgba(39, 39, 42, 0.85);
   border: 1px solid rgba(63, 63, 70, 0.7);
   color: #fbbf24;
-  font-size: 0.8rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  padding: 6px 9px;
-  border-radius: 8px;
+  padding: 7px 12px;
+  border-radius: 9px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   white-space: nowrap;
 }
 
-.btn-immersion-action { color: #e4e4e7; }
 .btn-toggle-mode.active-text-mode {
   background: rgba(245, 158, 11, 0.25);
   border-color: #f59e0b;
@@ -122,16 +103,16 @@
   background: linear-gradient(135deg, #d97706, #b45309);
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 0.8rem;
+  border-radius: 9px;
+  padding: 7px 14px;
+  font-size: 0.88rem;
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 5px;
   cursor: pointer;
   white-space: nowrap;
-  touch-action: pan-x;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35);
 }
 
 /* ==========================================================================

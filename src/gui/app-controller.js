@@ -74,8 +74,6 @@ export class AppController {
     this.btnPrev = document.getElementById('btn-prev-page');
     this.btnNext = document.getElementById('btn-next-page');
 
-    this.btnToggleRotation = document.getElementById('btn-toggle-rotation');
-    this.btnToggleImmersion = document.getElementById('btn-toggle-immersion');
     this.btnToggleViewMode = document.getElementById('btn-toggle-view-mode');
     this.controlsTextMode = document.getElementById('controls-text-mode');
     this.controlsPdfMode = document.getElementById('controls-pdf-mode');
@@ -179,8 +177,6 @@ export class AppController {
       headerBar: this.headerBar,
       fontControlsBar: this.fontControlsBar,
       bottomBar: this.bottomBar,
-      btnToggleRotation: this.btnToggleRotation,
-      btnToggleImmersion: this.btnToggleImmersion,
       textContainer: this.textContainer,
       pdfContainer: this.pdfContainer
     });

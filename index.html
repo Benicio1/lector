@@ -40,13 +40,13 @@
       </header>
 
       <!-- Selector de Archivo Local del Teléfono -->
-      <input type="file" id="file-input" accept="application/pdf" class="hidden">
+      <input type="file" id="file-input" accept="application/pdf" class="visually-hidden-file-input">
       
       <div id="drop-zone" class="picker-card">
         <div class="picker-icon">📂</div>
-        <button id="btn-pick-file" type="button" class="btn-open-phone">
+        <label for="file-input" id="btn-pick-file" class="btn-open-phone">
           <span>Abrir un PDF de mi Celular</span>
-        </button>
+        </label>
         <p class="picker-hint">Tocá el botón para elegir cualquier libro o documento guardado en tus archivos</p>
         
         <div class="sample-book-wrapper">

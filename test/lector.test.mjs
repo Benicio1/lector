@@ -289,3 +289,11 @@ describe('Caché Local Persistente de Libros (book-cache)', () => {
   });
 });
 
+import { AppController } from '../src/gui/app-controller.js';
+
+describe('Controlador Principal (AppController)', () => {
+  it('debe exportar la clase AppController correctamente sin errores de sintaxis', () => {
+    assert.equal(typeof AppController, 'function');
+  });
+});
+

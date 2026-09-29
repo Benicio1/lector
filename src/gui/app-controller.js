@@ -214,13 +214,6 @@ export class AppController {
     });
   }
 
-    window.addEventListener('keydown', (e) => {
-      if (this.viewReader.classList.contains('hidden')) return;
-      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') this.navigatePage(1);
-      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') this.navigatePage(-1);
-    });
-  }
-
   async navigatePage(delta) {
     if (delta > 0) await this.viewer.nextPage();
     else await this.viewer.prevPage();

@@ -188,7 +188,8 @@ export class PdfViewer {
 
   /**
    * Extrae el contenido de texto de la página analizando tamaño de fuentes
-   * para detectar títulos de capítulos y subtítulos frente al texto normal.
+   * para detectar títulos de capítulos y subtítulos, y uniendo líneas continuas
+   * en párrafos fluidos según signos de puntuación y geometría del libro.
    */
   async getPageText(pageNum = this.currentPageNum) {
     if (!this.pdfDoc) return [];
@@ -203,19 +204,27 @@ export class PdfViewer {
       for (const item of textContent.items) {
         if (!item.str || !item.str.trim()) continue;
         const y = item.transform[5];
+        const x = item.transform[4];
         const fontSize = Math.round(Math.hypot(item.transform[0], item.transform[1]) || item.height || 12);
+        const str = item.str.trim();
 
         if (!currentLine || Math.abs(currentLine.y - y) > 5) {
           if (currentLine) lines.push(currentLine);
-          currentLine = { y, fontSize, text: item.str.trim() };
+          currentLine = { x, y, fontSize, text: str };
         } else {
-          currentLine.text += ' ' + item.str.trim();
+          // Reconstruir palabras cortadas con guion al final
+          if (/[-—]\s*$/.test(currentLine.text) && /^[a-záéíóúñ]/i.test(str)) {
+            currentLine.text = currentLine.text.replace(/[-—]\s*$/, '') + str;
+          } else {
+            currentLine.text += ' ' + str;
+          }
           currentLine.fontSize = Math.max(currentLine.fontSize, fontSize);
         }
       }
       if (currentLine) lines.push(currentLine);
       if (!lines.length) return [];
 
+      // Tamaño de fuente del cuerpo de texto dominante
       const sizeHistogram = {};
       for (const line of lines) {
         const sz = line.fontSize;
@@ -230,11 +239,14 @@ export class PdfViewer {
         }
       }
 
-      const blocks = [];
+      // Parámetros espaciales de la página
+      const xPositions = lines.map(l => l.x).filter(x => typeof x === 'number' && x > 0);
+      const minX = xPositions.length ? Math.min(...xPositions) : 0;
+      const maxLineLen = Math.max(...lines.map(l => l.text.length), 30);
+
+      // Clasificación previa de líneas
       for (const line of lines) {
         const text = line.text.trim();
-        if (!text) continue;
-
         const isLarger = line.fontSize >= bodyFontSize * 1.15;
         const isMuchLarger = line.fontSize >= bodyFontSize * 1.35;
         const isShort = text.length <= 75;
@@ -242,12 +254,69 @@ export class PdfViewer {
         const isChapterPattern = /^(cap[ií]tulo|parte|secci[oó]n|libro|acto|pr[oó]logo|ep[ií]logo|introducci[oó]n)\b/i.test(text);
 
         if ((isMuchLarger && isShort) || (isChapterPattern && isShort)) {
-          blocks.push({ type: 'title', text });
+          line.type = 'title';
         } else if (isLarger && isShort && noEndingDot) {
-          blocks.push({ type: 'subtitle', text });
+          line.type = 'subtitle';
         } else {
-          blocks.push({ type: 'paragraph', text });
+          line.type = 'body';
         }
+      }
+
+      // Agrupación inteligente de líneas continuas en párrafos reales
+      const blocks = [];
+      let currentBlock = null;
+
+      for (const line of lines) {
+        const text = line.text.trim();
+        if (!text) continue;
+
+        if (line.type === 'title' || line.type === 'subtitle') {
+          if (currentBlock && currentBlock.type === line.type && !/[.!?]$/.test(currentBlock.text)) {
+            currentBlock.text += '\n' + text;
+          } else {
+            if (currentBlock) blocks.push(currentBlock);
+            currentBlock = { type: line.type, text };
+          }
+          continue;
+        }
+
+        // Línea de cuerpo normal
+        if (!currentBlock || currentBlock.type !== 'paragraph') {
+          if (currentBlock) blocks.push(currentBlock);
+          currentBlock = { type: 'paragraph', text, lastLine: line };
+          continue;
+        }
+
+        // Verificar si la línea anterior realmente cerró un párrafo (punto y aparte)
+        const prevLine = currentBlock.lastLine;
+        const prevText = currentBlock.text.trim();
+        const prevEndsWithPunct = /[.?!…»"”']\s*$/.test(prevText);
+        const lineGap = prevLine ? Math.abs(prevLine.y - line.y) : 0;
+        const hasLargeGap = lineGap >= bodyFontSize * 1.7;
+        const isIndented = line.x > minX + 12;
+        const isPrevShort = prevLine && prevLine.text.length < maxLineLen * 0.72;
+        const startsWithCapital = /^[A-ZÁÉÍÓÚÑ¿¡«"”]/.test(text);
+        const startsWithDialogue = /^[—–\-]\s*[A-ZÁÉÍÓÚÑa-záéíóúñ¿¡]/.test(text);
+
+        const isNewParagraph = startsWithDialogue ||
+          (prevEndsWithPunct && (hasLargeGap || isIndented || (isPrevShort && startsWithCapital)));
+
+        if (isNewParagraph) {
+          blocks.push({ type: 'paragraph', text: currentBlock.text });
+          currentBlock = { type: 'paragraph', text, lastLine: line };
+        } else {
+          // Continuación natural de la misma oración o párrafo
+          if (/[-—]\s*$/.test(currentBlock.text) && /^[a-záéíóúñ]/i.test(text)) {
+            currentBlock.text = currentBlock.text.replace(/[-—]\s*$/, '') + text;
+          } else {
+            currentBlock.text += ' ' + text;
+          }
+          currentBlock.lastLine = line;
+        }
+      }
+
+      if (currentBlock) {
+        blocks.push({ type: currentBlock.type, text: currentBlock.text });
       }
 
       return blocks;

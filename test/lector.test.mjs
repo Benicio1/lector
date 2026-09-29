@@ -242,5 +242,23 @@ describe('Modo Letra Grande y Tipografías (TextModeController)', () => {
     assert.ok(mockTextEl.innerHTML.includes('<h2 class="reading-chapter-title">La infancia minusválida</h2>'));
     assert.ok(mockTextEl.innerHTML.includes('<p class="reading-paragraph">El sol de la mañana entraba por la ventana.</p>'));
   });
+
+  it('debe unir líneas continuas que no terminan en punto para evitar pausas artificiales', () => {
+    const mockContainer = { scrollTop: 0 };
+    const mockTextEl = { style: {}, innerHTML: '' };
+    const controller = new TextModeController({
+      container: mockContainer,
+      textEl: mockTextEl
+    });
+
+    // Líneas partidas por el ancho de la página en el PDF pero pertenecientes a la misma oración
+    const rawContinuousLines = 'El sonido atraviesa la villa envuelta en las\nsombras, rebota en los galpones del ferrocarril y\nsuena como la trompeta de un ángel.';
+    controller.setPageText(rawContinuousLines);
+
+    // Debe generar UN ÚNICO párrafo continuo, sin separar 'las' de 'sombras' ni 'y' de 'suena'
+    assert.ok(mockTextEl.innerHTML.includes('<p class="reading-paragraph">El sonido atraviesa la villa envuelta en las sombras, rebota en los galpones del ferrocarril y suena como la trompeta de un ángel.</p>'));
+    const paragraphMatches = mockTextEl.innerHTML.match(/<p class="reading-paragraph">/g);
+    assert.equal(paragraphMatches.length, 1);
+  });
 });
 

@@ -53,7 +53,7 @@ export class TextModeController {
     if (Array.isArray(input)) {
       this.rawText = input.map(item => item.text).join('\n\n');
       this.textEl.innerHTML = input.map(item => {
-        const escaped = this.escape(item.text);
+        const escaped = this.escape(item.text).replace(/\n/g, '<br>');
         if (item.type === 'title') {
           return `<h2 class="reading-chapter-title">${escaped}</h2>`;
         }
@@ -64,14 +64,14 @@ export class TextModeController {
       }).join('');
     } else {
       this.rawText = String(input);
-      const paragraphs = this.rawText
+      const rawBlocks = this.rawText
         .split(/\n\s*\n/)
         .map(p => p.trim())
         .filter(Boolean);
 
-      const items = paragraphs.length > 1
-        ? paragraphs
-        : this.rawText.split('\n').map(l => l.trim()).filter(Boolean);
+      const items = rawBlocks.length > 1
+        ? rawBlocks
+        : this.mergeRawLines(this.rawText.split('\n'));
 
       this.textEl.innerHTML = items.map(text => {
         const escaped = this.escape(text);
@@ -84,6 +84,38 @@ export class TextModeController {
 
     this.applyStyles();
     this.container.scrollTop = 0;
+  }
+
+  mergeRawLines(rawLines) {
+    const merged = [];
+    let current = '';
+
+    for (const raw of rawLines) {
+      const line = raw.trim();
+      if (!line) continue;
+
+      if (!current) {
+        current = line;
+        continue;
+      }
+
+      const prevEndsWithPunct = /[.?!…»"”']\s*$/.test(current);
+      const isHeading = this.isHeadingCandidate(line);
+      const startsWithDialogue = /^[—–\-]\s*[A-ZÁÉÍÓÚÑa-záéíóúñ¿¡]/.test(line);
+
+      if (isHeading || startsWithDialogue || (prevEndsWithPunct && /^[A-ZÁÉÍÓÚÑ¿¡]/.test(line))) {
+        merged.push(current);
+        current = line;
+      } else {
+        if (/[-—]\s*$/.test(current) && /^[a-záéíóúñ]/i.test(line)) {
+          current = current.replace(/[-—]\s*$/, '') + line;
+        } else {
+          current += ' ' + line;
+        }
+      }
+    }
+    if (current) merged.push(current);
+    return merged;
   }
 
   isHeadingCandidate(text) {

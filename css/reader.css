@@ -246,9 +246,9 @@
 }
 
 .reading-paragraph {
-  margin-bottom: 1.5em;
+  margin-bottom: 0.85em;
   text-align: left;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   word-break: break-word;
 }
 
